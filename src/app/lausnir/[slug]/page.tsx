@@ -13,6 +13,7 @@ import {
 } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { NewsCard } from "@/components/news-card";
+import { ContactForm } from "@/components/contact-form";
 import type { NewsPost } from "@/lib/types";
 
 type Params = { slug: string };
@@ -104,12 +105,23 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
                 <p className="mt-5 text-xs text-ink-900/50">
                   Endanleg samsetning fer eftir notkun og aðstæðum.
                 </p>
-                <div className="mt-6">
-                  <Button href="/hafa-samband" className="w-full">
-                    Ræða við ráðgjafa
-                  </Button>
-                </div>
               </Card>
+
+              <div className="relative mt-6 overflow-hidden rounded-3xl bg-ink-900 p-7 text-white">
+                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-500/30 blur-[70px]" />
+                <div className="relative">
+                  <ContactForm
+                    variant="compact"
+                    tone="dark"
+                    title="Fá tilboð"
+                    intro={`Stutt fyrirspurn um ${solution.title.toLowerCase()} – við svörum fljótt.`}
+                    subject={`Tilboð – ${solution.title}`}
+                    projectType={solution.title}
+                    reference={`lausn:${solution.slug}`}
+                    className="relative"
+                  />
+                </div>
+              </div>
             </aside>
           </div>
         </Container>

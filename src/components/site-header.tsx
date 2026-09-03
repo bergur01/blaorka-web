@@ -19,11 +19,6 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Loka valmynd við leiðsögn
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -125,6 +120,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setOpen(false)}
               className="rounded-2xl px-4 py-3 text-lg font-medium text-white/85 hover:bg-white/6 hover:text-white"
             >
               {item.label}

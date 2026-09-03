@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import { site } from "@/content/site";
-import { Container, Eyebrow, PageHero, Section, WipNote } from "@/components/ui";
+import { Container, Eyebrow, PageHero, Section } from "@/components/ui";
+import { ContactForm } from "@/components/contact-form";
 import { ExternalArrow } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Hafa samband",
   description: "Hafðu samband við Bláorku – fáðu tilboð í sólarorkukerfi eða ráðgjöf.",
 };
-
-const inputCls =
-  "h-12 w-full rounded-xl border border-mist-300 bg-mist-50 px-4 text-sm text-ink-900 placeholder:text-ink-900/35 disabled:cursor-not-allowed";
 
 export default function ContactPage() {
   return (
@@ -23,62 +21,14 @@ export default function ContactPage() {
       <Section tone="light">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
-            <form className="rounded-3xl border border-mist-200 bg-white p-7 shadow-card sm:p-9">
-              <h2 className="font-display text-xl font-semibold">Fá tilboð eða ráðgjöf</h2>
-              <p className="mt-1 text-sm text-ink-900/60">
-                Því meira sem þú segir okkur, því nákvæmari tillögu getum við sent.
-              </p>
-              <div className="mt-8 grid gap-5 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-medium">Nafn</span>
-                  <input disabled className={`mt-1.5 ${inputCls}`} placeholder="Fullt nafn" />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium">Sími</span>
-                  <input disabled className={`mt-1.5 ${inputCls}`} placeholder="xxx xxxx" />
-                </label>
-                <label className="block sm:col-span-2">
-                  <span className="text-sm font-medium">Netfang</span>
-                  <input disabled className={`mt-1.5 ${inputCls}`} placeholder="nafn@dæmi.is" />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium">Tegund verkefnis</span>
-                  <select disabled className={`mt-1.5 appearance-none ${inputCls}`}>
-                    <option>Heimili / sumarhús</option>
-                    <option>Ótengt kerfi</option>
-                    <option>Húsbíll / bátur</option>
-                    <option>Fyrirtæki / fjarskipti</option>
-                    <option>Annað</option>
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium">Staðsetning</span>
-                  <input disabled className={`mt-1.5 ${inputCls}`} placeholder="t.d. Borgarfjörður" />
-                </label>
-                <label className="block sm:col-span-2">
-                  <span className="text-sm font-medium">Lýsing</span>
-                  <textarea
-                    disabled
-                    rows={5}
-                    className="mt-1.5 w-full rounded-xl border border-mist-300 bg-mist-50 px-4 py-3 text-sm placeholder:text-ink-900/35 disabled:cursor-not-allowed"
-                    placeholder="Hvaða tæki þarf að keyra, er rafstöð til staðar, hvað er stórt þak…"
-                  />
-                </label>
-              </div>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex h-12 items-center rounded-full bg-brand-500 px-6 text-sm font-semibold text-white opacity-50"
-                >
-                  Senda fyrirspurn
-                </button>
-                <span className="text-xs text-ink-900/50">Við deilum aldrei upplýsingunum þínum.</span>
-              </div>
-              <div className="mt-6">
-                <WipNote>Formið verður tengt við tölvupóst/CRM í næsta skrefi.</WipNote>
-              </div>
-            </form>
+            <div className="rounded-3xl border border-mist-200 bg-white p-7 shadow-card sm:p-9">
+              <ContactForm
+                variant="full"
+                title="Fá tilboð eða ráðgjöf"
+                intro="Því meira sem þú segir okkur, því nákvæmari tillögu getum við sent."
+                className="relative"
+              />
+            </div>
 
             <div className="space-y-6">
               <div className="rounded-3xl bg-ink-900 p-7 text-white sm:p-9">

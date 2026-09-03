@@ -38,6 +38,6 @@ Letur: Sora (fyrirsagnir) + Inter (meginmál) gegnum next/font.
 
 - [ ] Gagnagrunnur (Postgres/Prisma eða Supabase) + admin fyrir fréttir/greinar
 - [ ] Útreikningar í reiknivélum (`src/lib/calculators/`)
-- [ ] Tengja form á /hafa-samband
+- [x] Samskiptaform → PayGo Helpdesk (Server Action, lykill í .env.local – sjá .env.example)
 - [ ] Myndir af starfsfólki, kort á /hafa-samband
 - [ ] Vektor-útgáfa af orðmerki (nú PNG)

@@ -42,8 +42,8 @@ export const team: TeamMember[] = [
 ];
 
 export const stats = [
-  { value: "2015", label: "starfandi síðan" },
-  { value: "40 kWst", label: "stærstu rafgeymabankar okkar" },
-  { value: "20 kW", label: "sólarsellur í einu kerfi" },
-  { value: "3 fasa", label: "ótengd kerfi um allt land" },
+  { value: "2016", label: "Starfandi síðan" },
+  { value: "> 10 MWh", label: "Seld rafgeymarýmd" },
+  { value: "> 2 MW", label: "Selt afl í sólarsellum" },
+  { value: "Ekki hugmynd! Hellingur!", label: "Uppsett kerfi" },
 ];
