@@ -16,6 +16,7 @@ const columns = [
       { href: "/lausnir/husbilar-og-batar", label: "Húsbílar & bátar" },
       { href: "/lausnir/fyrirtaeki-og-fjarskipti", label: "Fyrirtæki & fjarskipti" },
       { href: "/lausnir/raforkubankar", label: "Raforkubankar" },
+      { href: "/verkefni", label: "Verkefni í myndum" },
     ],
   },
   {

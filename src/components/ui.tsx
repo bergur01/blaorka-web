@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ExternalArrow } from "./icons";
 
@@ -238,19 +239,39 @@ export function PageHero({
   lead,
   children,
   compact = false,
+  image,
+  imagePosition = "center",
 }: {
   eyebrow?: string;
   title: React.ReactNode;
   lead?: React.ReactNode;
   children?: React.ReactNode;
   compact?: boolean;
+  /** Bakgrunnsmynd – birtist dempuð undir texta eins og á forsíðu */
+  image?: string;
+  imagePosition?: string;
 }) {
   return (
     <section
-      className={`relative overflow-hidden bg-ink-900 text-white ${
+      className={`relative isolate overflow-hidden bg-ink-900 text-white ${
         compact ? "pt-32 pb-14 sm:pt-36 sm:pb-16" : "pt-36 pb-20 sm:pt-44 sm:pb-24"
       }`}
     >
+      {image && (
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={image}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-60"
+            style={{ objectPosition: imagePosition }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink-900/45 via-ink-900/40 to-ink-900" />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink-900/75 via-ink-900/25 to-transparent" />
+        </div>
+      )}
       <div className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]" />
       <div className="absolute -top-40 left-1/2 h-[32rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-[120px]" />
       <div className="absolute top-10 right-[-10rem] h-72 w-72 rounded-full bg-volt-500/20 blur-[90px] animate-float" />

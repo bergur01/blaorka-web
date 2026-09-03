@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { getCalculatorBySlug, getCalculators } from "@/lib/content";
 import { Badge, Container, Eyebrow, PageHero, Section, WipNote } from "@/components/ui";
 import { Icon } from "@/components/icons";
+import { SolarSystemCalculator } from "@/components/calculators/solar-system-calculator";
+import { MpptCalculator } from "@/components/calculators/mppt-calculator";
+import { EnergyCalculator } from "@/components/calculators/energy-calculator";
 
 type Params = { slug: string };
 
@@ -22,20 +25,60 @@ export async function generateMetadata({
   return { title: c.title, description: c.description };
 }
 
-export default async function CalculatorPage({ params }: { params: Promise<Params> }) {
+export default async function CalculatorPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { slug } = await params;
+  const sp = await searchParams;
+  const num = (v: string | string[] | undefined) => {
+    const n = Number(Array.isArray(v) ? v[0] : v);
+    return Number.isFinite(n) && n > 0 ? n : undefined;
+  };
   const calc = await getCalculatorBySlug(slug);
   if (!calc) notFound();
   const others = (await getCalculators()).filter((c) => c.slug !== slug);
 
   return (
     <>
-      <PageHero eyebrow="Reiknivél" title={calc.title} lead={calc.description} compact>
-        {calc.status === "soon" && <Badge tone="volt">Væntanlegt – beinagrind</Badge>}
+      <PageHero
+        eyebrow="Reiknivél"
+        title={calc.title}
+        lead={calc.description}
+        compact
+        image={
+          {
+            solarorkukerfi: "/gallery/11.webp",
+            mppt: "/photos/rafmagn-egar-u-arft-a-vi-a-halda-15a2936.webp",
+            orkunotkun: "/photos/ertu-klar-i-feralagi-15a2948.webp",
+            rafgeymar: "/photos/oflokkaar-15a2905.webp",
+            kaplar: "/photos/miki-urval-15a3037.webp",
+          }[calc.slug]
+        }
+      >
+        {calc.status === "soon" ? (
+          <Badge tone="volt">Væntanlegt – beinagrind</Badge>
+        ) : calc.slug === "mppt" ? (
+          <Badge tone="volt">Reglur og stýringagögn frá Victron Energy</Badge>
+        ) : calc.slug === "orkunotkun" ? (
+          <Badge tone="volt">Sömu forsendur og sólarorkureiknivélin</Badge>
+        ) : (
+          <Badge tone="volt">Rauntímagögn frá PVGIS · JRC</Badge>
+        )}
       </PageHero>
 
       <Section tone="light">
         <Container>
+          {calc.slug === "solarorkukerfi" ? (
+            <SolarSystemCalculator initialDaily={num(sp.daily)} initialPeak={num(sp.peak)} />
+          ) : calc.slug === "mppt" ? (
+            <MpptCalculator />
+          ) : calc.slug === "orkunotkun" ? (
+            <EnergyCalculator />
+          ) : (
           <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
             {/* Inntak */}
             <form
@@ -150,6 +193,7 @@ export default async function CalculatorPage({ params }: { params: Promise<Param
               </div>
             </div>
           </div>
+          )}
         </Container>
       </Section>
     </>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { site } from "@/content/site";
 import { Container, Eyebrow, PageHero, Section } from "@/components/ui";
 import { ContactForm } from "@/components/contact-form";
@@ -17,6 +18,7 @@ export default function ContactPage() {
         title="Segðu okkur frá verkefninu"
         lead="Sendu okkur línu, hringdu eða kíktu við í Fosshálsi. Við svörum yfirleitt samdægurs á virkum dögum."
         compact
+        image="/photos/komdu-vi-hja-blaorku-15a3273.webp"
       />
       <Section tone="light">
         <Container>
@@ -87,19 +89,33 @@ export default function ContactPage() {
                 </ul>
               </div>
 
-              {/* Kort – placeholder */}
-              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-mist-200 bg-mist-100 bg-grid-light">
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white shadow-glow">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z" />
-                      <circle cx="12" cy="10" r="2.5" />
-                    </svg>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  `${site.address.street}, ${site.address.city}`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card"
+              >
+                <Image
+                  src="/photos/stasetning-komdu-vi-dji_0126.webp"
+                  alt="Bláorka að Fosshálsi 27 úr lofti"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-ink-900/85 to-transparent p-5 text-white">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-white/60">Hér erum við</p>
+                    <p className="font-display text-lg font-semibold">
+                      {site.address.street}, {site.address.postal} {site.address.city}
+                    </p>
+                  </div>
+                  <span className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold backdrop-blur group-hover:bg-brand-500">
+                    Kort <ExternalArrow className="h-4 w-4" />
                   </span>
-                  <p className="mt-3 text-sm font-medium">Kort kemur hér</p>
-                  <p className="text-xs text-ink-900/50">{site.address.street}, {site.address.city}</p>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </Container>

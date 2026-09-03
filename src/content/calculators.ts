@@ -8,9 +8,9 @@ export const calculators: Calculator[] = [
     slug: "solarorkukerfi",
     title: "Stærð sólarorkukerfis",
     description:
-      "Áætlaðu hversu margar sólarsellur, hversu stóran rafgeymabanka og hvaða áriðil þú þarft út frá orkunotkun.",
+      "Áætlaðu sólarsellur, rafgeymabanka og áriðil út frá orkunotkun og staðsetningu – með raunverulegum geislunargögnum fyrir Ísland.",
     icon: "sun",
-    status: "soon",
+    status: "live",
     inputs: [
       {
         key: "dailyKwh",
@@ -57,7 +57,7 @@ export const calculators: Calculator[] = [
     ],
     outputs: [
       { label: "Sólarsellur", unit: "kWp" },
-      { label: "Fjöldi 500 W sella" },
+      { label: "Fjöldi 455 W sella" },
       { label: "Rafgeymabanki", unit: "kWst" },
       { label: "Fjöldi 10 kWst banka" },
       { label: "Áriðill", unit: "kVA" },
@@ -68,9 +68,9 @@ export const calculators: Calculator[] = [
     slug: "mppt",
     title: "MPPT reiknivél",
     description:
-      "Athugaðu hvort strengur af sólarsellum passi við MPPT stýringu – Voc í kulda, Isc og hámarksafl.",
+      "Finndu Victron MPPT-stýringu sem passar sellunum þínum – Voc í kulda, Vmp í hita, straumur og aflhlutfall, eftir sömu reglum og reiknivél Victron.",
     icon: "gauge",
-    status: "soon",
+    status: "live",
     inputs: [
       {
         key: "panelCount",
@@ -138,9 +138,9 @@ export const calculators: Calculator[] = [
     slug: "orkunotkun",
     title: "Orkunotkun",
     description:
-      "Taktu saman tækin á heimilinu, í bústaðnum eða bílnum og fáðu daglega orkuþörf í kWst.",
+      "Hakaðu við tækin á heimilinu eða í bústaðnum, bættu við eigin tækjum og fáðu orkuþörf á dag, mánuði og ári ásamt hámarksálagi.",
     icon: "bolt",
-    status: "soon",
+    status: "live",
     inputs: [
       {
         key: "device",

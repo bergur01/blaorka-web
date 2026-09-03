@@ -33,6 +33,8 @@ type Props = {
   tone?: "light" | "dark";
   title?: string;
   intro?: string;
+  /** Forútfyllt erindi, t.d. samantekt úr reiknivél */
+  defaultMessage?: string;
   className?: string;
 };
 
@@ -44,6 +46,7 @@ export function ContactForm({
   tone = "light",
   title,
   intro,
+  defaultMessage,
   className = "",
 }: Props) {
   const pathname = usePathname();
@@ -185,7 +188,8 @@ export function ContactForm({
           <textarea
             name="message"
             required
-            rows={compact ? 4 : 5}
+            defaultValue={defaultMessage}
+            rows={compact ? (defaultMessage ? 8 : 4) : 5}
             className={`mt-1.5 w-full rounded-xl px-4 py-3 text-sm outline-none ${
               dark
                 ? "border border-white/15 bg-white/5 text-white placeholder:text-white/35 focus:border-volt-400 focus:bg-white/10"

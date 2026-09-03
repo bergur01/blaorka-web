@@ -34,7 +34,7 @@ export default async function KnowledgeArticlePage({
 
   return (
     <>
-      <PageHero eyebrow="Fróðleikur" title={article.title} lead={article.summary} compact>
+      <PageHero eyebrow="Fróðleikur" title={article.title} lead={article.summary} image={article.image}>
         <p className="text-sm text-white/50">{article.readingMinutes} mín lestur</p>
       </PageHero>
 

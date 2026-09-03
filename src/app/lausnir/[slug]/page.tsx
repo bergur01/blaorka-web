@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getNewsBySlug, getSolutionBySlug, getSolutions } from "@/lib/content";
+import { getGalleryByIds, getNewsBySlug, getSolutionBySlug, getSolutions } from "@/lib/content";
 import {
   Button,
   Card,
@@ -14,6 +13,7 @@ import {
 import { Icon } from "@/components/icons";
 import { NewsCard } from "@/components/news-card";
 import { ContactForm } from "@/components/contact-form";
+import { Gallery } from "@/components/gallery";
 import type { NewsPost } from "@/lib/types";
 
 type Params = { slug: string };
@@ -41,10 +41,11 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
   const related = (
     await Promise.all((solution.relatedNews ?? []).map((s) => getNewsBySlug(s)))
   ).filter((p): p is NewsPost => p !== null);
+  const gallery = await getGalleryByIds(solution.gallery ?? []);
 
   return (
     <>
-      <PageHero eyebrow="Lausnir" title={solution.title} lead={solution.tagline}>
+      <PageHero eyebrow="Lausnir" title={solution.title} lead={solution.tagline} image={solution.image}>
         <div className="flex flex-wrap gap-3">
           <Button href="/hafa-samband">Fá tilboð</Button>
           <Button href="/reiknivelar/solarorkukerfi" variant="outline">
@@ -57,18 +58,6 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
             <div>
-              {solution.image && (
-                <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
-                  <Image
-                    src={solution.image}
-                    alt={solution.title}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 60vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
               <Eyebrow className="mb-4">Um lausnina</Eyebrow>
               <p className="text-lg leading-relaxed text-ink-900/80">{solution.description}</p>
 
@@ -127,8 +116,20 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
         </Container>
       </Section>
 
+      {gallery.length > 0 && (
+        <Section tone="white" className="!pt-0">
+          <Container>
+            <Eyebrow className="mb-4">Myndir</Eyebrow>
+            <Heading size="md">Úr uppsetningum</Heading>
+            <div className="mt-8">
+              <Gallery images={gallery} columns={4} />
+            </div>
+          </Container>
+        </Section>
+      )}
+
       {related.length > 0 && (
-        <Section tone="white">
+        <Section tone="light">
           <Container>
             <Eyebrow className="mb-4">Verkefni</Eyebrow>
             <Heading size="md">Svona kerfi höfum við sett upp</Heading>

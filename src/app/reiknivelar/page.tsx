@@ -18,6 +18,7 @@ export default async function CalculatorsPage() {
         eyebrow="Reiknivélar"
         title="Verkfæri fyrir sólarorkukerfi"
         lead="Sláðu inn þínar tölur og fáðu áætlun um stærð sella, rafgeyma, áriðils og kapla. Niðurstöðurnar eru leiðbeinandi – við förum yfir þær með þér."
+        image="/photos/victron-raforkubunaur-15a3061.webp"
       />
       <Section tone="light">
         <Container>

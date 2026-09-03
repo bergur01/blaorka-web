@@ -5,6 +5,7 @@ import type { KnowledgeArticle } from "@/lib/types";
 export const knowledgeArticles: KnowledgeArticle[] = [
   {
     slug: "solarsellur",
+    image: "/gallery/43.webp",
     title: "Sólarsellur",
     summary:
       "Hvað eru sólarsellur, hvernig framleiða þær rafmagn og hvað þarf að hafa í huga við val?",
@@ -44,6 +45,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
   },
   {
     slug: "solarsellustyringar",
+    image: "/photos/rafmagn-egar-u-arft-a-vi-a-halda-15a2936.webp",
     title: "Sólarsellustýringar – MPPT og PWM",
     summary:
       "Stýringin sér um að hlaða rafgeymana rétt. Hér er munurinn á MPPT og PWM útskýrður.",
@@ -88,6 +90,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
   },
   {
     slug: "rafgeymar",
+    image: "/photos/oflokkaar-15a3137.webp",
     title: "Rafgeymar – LiFePO4 vs. blý",
     summary:
       "Af hverju við notum LiFePO4, hvernig kWst og Ah tengjast og hvað „hleðsluhringur“ þýðir.",
@@ -122,6 +125,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
   },
   {
     slug: "aridlar",
+    image: "/photos/rafmagn-egar-u-arft-a-vi-a-halda-15a2925.webp",
     title: "Áriðlar og hleðslutæki",
     summary:
       "Hvernig MultiPlus breytir 48 V jafnstraumi í 230 V, og af hverju þriggja fasa kerfi þurfa þrjá.",
@@ -149,6 +153,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
   },
   {
     slug: "otengd-kerfi-grunnur",
+    image: "/gallery/17.webp",
     title: "Ótengt kerfi frá A til Ö",
     summary:
       "Hvaða hlutar mynda sjálfstætt raforkukerfi og hvernig tala þeir saman?",
@@ -179,6 +184,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
   },
   {
     slug: "algengar-spurningar",
+    image: "/photos/komdu-vi-hja-blaorku-15a3273.webp",
     title: "Algengar spurningar",
     summary: "Stutt svör við því sem við erum oftast spurð um.",
     icon: "question",

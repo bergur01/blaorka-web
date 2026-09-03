@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCalculators, getLatestNews, getSolutions } from "@/lib/content";
+import { getCalculators, getGallery, getLatestNews, getSolutions } from "@/lib/content";
 import { site, stats } from "@/content/site";
 import {
   Badge,
@@ -15,13 +15,19 @@ import {
 import { ArrowRight, Icon } from "@/components/icons";
 import { LogoMark } from "@/components/logo";
 import { NewsCard } from "@/components/news-card";
+import { Gallery } from "@/components/gallery";
 
 export default async function HomePage() {
-  const [news, solutions, calculators] = await Promise.all([
+  const [news, solutions, calculators, gallery] = await Promise.all([
     getLatestNews(3),
     getSolutions(),
     getCalculators(),
+    getGallery(),
   ]);
+  // Blanda af úti- og innimyndum á forsíðu
+  const featured = ["11", "17", "37", "08", "28", "43", "35", "22"]
+    .map((id) => gallery.find((g) => g.id === id))
+    .filter((g): g is NonNullable<typeof g> => !!g);
 
   return (
     <>
@@ -29,12 +35,12 @@ export default async function HomePage() {
       <section className="relative isolate overflow-hidden bg-ink-900 text-white">
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/news/eyja-i-breidafirdi-5f2307.webp"
+            src="/gallery/hero.webp"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-30"
+            className="object-cover object-center opacity-40"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ink-900/70 via-ink-900/80 to-ink-900" />
           <div className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
@@ -226,6 +232,22 @@ export default async function HomePage() {
         </Container>
       </Section>
 
+      {/* ---------------- MYNDIR ---------------- */}
+      <Section tone="white">
+        <Container>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <Eyebrow className="mb-4">Verkefni í myndum</Eyebrow>
+              <Heading>Úr sumarhúsum, af fjöllum og út í eyjar</Heading>
+            </div>
+            <TextLink href="/verkefni">Allar myndir</TextLink>
+          </div>
+          <div className="mt-12">
+            <Gallery images={featured} columns={4} />
+          </div>
+        </Container>
+      </Section>
+
       {/* ---------------- FRÉTTIR ---------------- */}
       <Section tone="light">
         <Container>
@@ -240,6 +262,49 @@ export default async function HomePage() {
             {news.map((p) => (
               <NewsCard key={p.slug} post={p} />
             ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* ---------------- VERSLUNIN ---------------- */}
+      <Section tone="white">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center">
+            <div>
+              <Eyebrow className="mb-4">Komdu við</Eyebrow>
+              <Heading>Verslunin í Fosshálsi</Heading>
+              <Lead className="mt-4 text-ink-900/65">
+                Victron-búnaður, Bláorku rafgeymar, sólarsellur, kaplar og tengi – allt á lager. Kíktu við, við
+                setjum saman kerfið með þér yfir kaffibolla.
+              </Lead>
+              <dl className="mt-6 space-y-1.5 text-sm">
+                {site.hours.map((h) => (
+                  <div key={h.days} className="flex justify-between gap-4 border-b border-mist-200 py-1.5">
+                    <dt className="text-ink-900/60">{h.days}</dt>
+                    <dd className="font-medium">{h.time}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button href="/um-okkur" variant="outline-dark">
+                  Um okkur
+                </Button>
+                <Button href={site.shopUrl} external>
+                  Vefverslun
+                </Button>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="relative col-span-2 aspect-[16/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
+                <Image src="/photos/komdu-vi-hja-blaorku-15a2772.webp" alt="Verslun Bláorku að Fosshálsi 27" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+              </div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
+                <Image src="/photos/victron-raforkubunaur-15a3061.webp" alt="Victron búnaður" fill sizes="(min-width: 1024px) 27vw, 50vw" className="object-cover" />
+              </div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
+                <Image src="/photos/stasetning-komdu-vi-15a3301.webp" alt="Lagerinn" fill sizes="(min-width: 1024px) 27vw, 50vw" className="object-cover" />
+              </div>
+            </div>
           </div>
         </Container>
       </Section>

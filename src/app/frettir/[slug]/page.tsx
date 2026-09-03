@@ -47,12 +47,18 @@ export default async function NewsArticlePage({ params }: { params: Promise<Para
 
   // Hópa samliggjandi „lista-línur" saman í <ul>
   const blocks: Array<{ type: "p"; text: string } | { type: "ul"; items: string[] }> = [];
+  // Eftir málsgrein sem endar á „:" teljast stuttar línur til lista þar til löng málsgrein kemur
+  let listMode = false;
   for (const line of post.body) {
-    const isItem = looksLikeListItem(line) || (line.length < 40 && /\d/.test(line) && !line.endsWith("."));
+    const isItem: boolean =
+      looksLikeListItem(line) ||
+      (line.length < 40 && /\d/.test(line) && !line.endsWith(".")) ||
+      (listMode && line.length <= 80 && !line.endsWith("."));
     const last = blocks[blocks.length - 1];
     if (isItem && last?.type === "ul") last.items.push(line);
     else if (isItem) blocks.push({ type: "ul", items: [line] });
     else blocks.push({ type: "p", text: line });
+    listMode = isItem ? listMode : line.trim().endsWith(":");
   }
 
   return (
@@ -139,6 +145,27 @@ export default async function NewsArticlePage({ params }: { params: Promise<Para
                       />
                     </div>
                   ))}
+                </div>
+              )}
+
+              {post.links && post.links.length > 0 && (
+                <div className="mt-10 rounded-2xl border border-mist-200 bg-mist-50 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-900/50">Tenglar</p>
+                  <ul className="mt-3 space-y-2">
+                    {post.links.map((l) => (
+                      <li key={l.url}>
+                        <a
+                          href={l.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 hover:underline"
+                        >
+                          {l.label}
+                          <ArrowRight className="h-4 w-4 -rotate-45" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 

@@ -29,9 +29,11 @@ export function SiteHeader() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled || open
-          ? "glass shadow-[0_10px_40px_-20px_rgb(0_0_0/0.6)]"
-          : "bg-transparent border-b border-transparent"
+        open
+          ? "bg-ink-950 shadow-[0_10px_40px_-20px_rgb(0_0_0/0.6)]"
+          : scrolled
+            ? "glass shadow-[0_10px_40px_-20px_rgb(0_0_0/0.6)]"
+            : "bg-transparent border-b border-transparent"
       }`}
     >
       <div className="container-x flex h-18 items-center justify-between gap-6">
@@ -111,21 +113,27 @@ export function SiteHeader() {
       {/* Farsímavalmynd */}
       <div
         id="mobile-nav"
-        className={`lg:hidden overflow-hidden transition-[max-height] duration-300 ${
-          open ? "max-h-[90dvh]" : "max-h-0"
+        className={`lg:hidden overflow-y-auto bg-ink-950 transition-[max-height] duration-300 ${
+          open ? "max-h-[calc(100dvh-4.5rem)] min-h-[calc(100dvh-4.5rem)] border-t border-white/10" : "max-h-0"
         }`}
       >
-        <nav className="container-x flex flex-col gap-1 pb-6 pt-2" aria-label="Farsímavalmynd">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="rounded-2xl px-4 py-3 text-lg font-medium text-white/85 hover:bg-white/6 hover:text-white"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="container-x flex flex-col pb-8 pt-3" aria-label="Farsímavalmynd">
+          {navigation.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={`flex items-center justify-between border-b border-white/8 px-1 py-4 font-display text-xl font-semibold ${
+                  active ? "text-volt-300" : "text-white/90"
+                }`}
+              >
+                {item.label}
+                <span className="text-white/30">→</span>
+              </Link>
+            );
+          })}
           <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
             <a
               href={site.shopUrl}

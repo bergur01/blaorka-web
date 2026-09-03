@@ -8,8 +8,10 @@ import { newsSeed } from "@/content/news";
 import { solutions } from "@/content/solutions";
 import { knowledgeArticles } from "@/content/knowledge";
 import { calculators } from "@/content/calculators";
+import { galleryImages } from "@/content/gallery";
 import type {
   Calculator,
+  GalleryImage,
   KnowledgeArticle,
   NewsPost,
   Solution,
@@ -59,6 +61,14 @@ export async function getCalculatorBySlug(
   slug: string,
 ): Promise<Calculator | null> {
   return calculators.find((c) => c.slug === slug) ?? null;
+}
+
+export async function getGallery(category?: GalleryImage["category"]): Promise<GalleryImage[]> {
+  return category ? galleryImages.filter((g) => g.category === category) : galleryImages;
+}
+
+export async function getGalleryByIds(ids: string[]): Promise<GalleryImage[]> {
+  return ids.map((id) => galleryImages.find((g) => g.id === id)).filter((g): g is GalleryImage => !!g);
 }
 
 export function formatDate(iso: string): string {

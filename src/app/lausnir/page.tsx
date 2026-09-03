@@ -19,6 +19,8 @@ export default async function SolutionsPage() {
         eyebrow="Lausnir"
         title="Frá einni sellu upp í heila eyju"
         lead="Við hönnum hvert kerfi út frá aðstæðum, notkun og framtíðarþörfum. Hér eru algengustu tegundir verkefna sem við tökum að okkur."
+        image="/gallery/21.webp"
+        imagePosition="center 40%"
       />
       <Section tone="light">
         <Container>

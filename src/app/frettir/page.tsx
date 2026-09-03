@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getAllNews, getNewsCategories } from "@/lib/content";
-import { Container, PageHero, Section, WipNote } from "@/components/ui";
+import { Container, PageHero, Section } from "@/components/ui";
 import { NewsCard } from "@/components/news-card";
 
 export const metadata: Metadata = {
@@ -17,8 +17,9 @@ export default async function NewsPage() {
       <PageHero
         eyebrow="Fréttir & verkefni"
         title="Það sem við höfum verið að gera"
-        lead="Uppsetningar, ný tæki og tilkynningar – beint úr verkstæðinu og af vettvangi."
+        lead="Uppsetningar, ný tæki og tilkynningar – beint úr versluninni og af vettvangi."
         compact
+        image="/gallery/36.webp"
       />
       <Section tone="light">
         <Container>
@@ -44,12 +45,6 @@ export default async function NewsPage() {
             ))}
           </div>
 
-          <div className="mt-12">
-            <WipNote>
-              {posts.length} fréttir sóttar af blaorka.is/frettir sem seed-gögn. Flokkasía,
-              leit og síðuskipting koma með gagnagrunni.
-            </WipNote>
-          </div>
         </Container>
       </Section>
     </>

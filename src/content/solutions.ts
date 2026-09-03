@@ -15,14 +15,15 @@ export const solutions: Solution[] = [
       "Fjarvöktun í appi (Victron VRM)",
     ],
     equipment: [
-      "Sólarsellur 400–500 W",
+      "Bláorku 455 W sólarsellur (1762 × 1134 mm)",
       "MPPT sólarsellustýring",
       "MultiPlus-II áriðill/hleðslutæki",
       "Bláorku LiFePO4 rafgeymar",
       "Cerbo GX stýrieining",
     ],
     relatedNews: ["siglufjordur", "thriggja-fasa-hus-med-solarorku"],
-    image: "/news/siglufjordur-7c5fb1.webp",
+    image: "/gallery/21.webp",
+    gallery: ["07", "22", "13", "33"],
   },
   {
     slug: "otengd-kerfi",
@@ -46,7 +47,8 @@ export const solutions: Solution[] = [
       "Vindmylla / rafstöð eftir aðstæðum",
     ],
     relatedNews: ["eyja-i-breidafirdi", "sunnanverdir-vestfirdir"],
-    image: "/news/eyja-i-breidafirdi-5f2307.webp",
+    image: "/gallery/11.webp",
+    gallery: ["42", "17", "43", "37"],
   },
   {
     slug: "husbilar-og-batar",
@@ -73,14 +75,15 @@ export const solutions: Solution[] = [
       "25-6v-lifepo4-lynx-multiplus-ii-kerfi-i-husbil",
       "alveg-sjalfbaer-ford-husbill",
     ],
-    image: "/news/lifepo4-lynx-multiplus-i-24378b.webp",
+    image: "/photos/ertu-klar-i-feralagi-15a2811.webp",
+    gallery: ["p-ferd-2783", "p-ferd-2948", "p-ferd-2963", "p-varaafl-3120"],
   },
   {
     slug: "fyrirtaeki-og-fjarskipti",
     title: "Fyrirtæki & fjarskipti",
     tagline: "Áreiðanleg orka fyrir fjarskiptastaði, sendamöstur og rekstur.",
     description:
-      "Við höfum unnið með Neyðarlínunni, Mílu og björgunarsveitum að lausnum sem tryggja rafmagn á afskekktum fjarskiptastöðum, draga úr olíunotkun og lengja endingu búnaðar. Sömu lausnir henta fyrirtækjum sem vilja varaafl og betri nýtingu á grænni orku.",
+      "Við höfum unnið með Neyðarlínunni, Mílu, björgunarsveitum og fleirum að lausnum sem tryggja rafmagn á afskekktum fjarskiptastöðum, draga úr olíunotkun og lengja endingu búnaðar. Sömu lausnir henta fyrirtækjum sem vilja varaafl og betri nýtingu á grænni orku.",
     icon: "tower",
     highlights: [
       "Varaafl fyrir fjarskipti og öryggiskerfi",
@@ -95,11 +98,12 @@ export const solutions: Solution[] = [
       "Cerbo GX með 4G tengingu",
     ],
     relatedNews: [
+      "slorfell-mila-orkuskipti-fjarskiptastadar",
       "neydarlinan-og-netberg-grimsfjall",
       "mila-betri-nyting-a-graenni-orku-og-oliusparnadur",
-      "hjalparsveit-skata-kopur-1",
     ],
-    image: "/news/neydarlinan-og-netberg-g-0e04aa.webp",
+    image: "/gallery/00.webp",
+    gallery: ["35", "36", "12", "37"],
   },
   {
     slug: "plug-n-play-toflur",
@@ -121,7 +125,8 @@ export const solutions: Solution[] = [
       "Öryggi, rofar og skinnur",
     ],
     relatedNews: ["toflusmid-i-sprinter"],
-    image: "/news/toflusmid-i-sprinter-1f1d6d.webp",
+    image: "/photos/uppsetning-a-rafmagni-15a2877.webp",
+    gallery: ["p-upps-2791", "p-varaafl-2925", "08", "02"],
   },
   {
     slug: "raforkubankar",
@@ -143,5 +148,6 @@ export const solutions: Solution[] = [
     ],
     relatedNews: ["raforkubankar"],
     image: "/news/raforkubankar-d88024.webp",
+    gallery: ["p-rafg-2905", "p-rafg-2887", "p-rafg-3137", "28"],
   },
 ];

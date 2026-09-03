@@ -28,6 +28,7 @@ export const site = {
 
 export const navigation = [
   { href: "/lausnir", label: "Lausnir" },
+  { href: "/verkefni", label: "Verkefni" },
   { href: "/frodleikur", label: "Fróðleikur" },
   { href: "/reiknivelar", label: "Reiknivélar" },
   { href: "/frettir", label: "Fréttir" },

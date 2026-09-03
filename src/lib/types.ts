@@ -19,6 +19,8 @@ export interface NewsPost {
   /** Slóðir í /public */
   images: string[];
   category: NewsCategory;
+  /** Ytri tenglar, t.d. umfjöllun fjölmiðla */
+  links?: { label: string; url: string }[];
 }
 
 export interface Solution {
@@ -33,6 +35,8 @@ export interface Solution {
   /** Slóðir á fréttir sem sýna svona kerfi */
   relatedNews?: string[];
   image?: string;
+  /** Auðkenni mynda úr galleríi */
+  gallery?: string[];
 }
 
 export interface KnowledgeArticle {
@@ -41,6 +45,8 @@ export interface KnowledgeArticle {
   summary: string;
   icon: IconName;
   readingMinutes: number;
+  /** Forsíðumynd greinar */
+  image?: string;
   sections: { heading: string; paragraphs: string[]; bullets?: string[] }[];
 }
 
@@ -63,6 +69,15 @@ export interface Calculator {
   inputs: CalculatorField[];
   /** Niðurstöður sem reiknivélin mun skila */
   outputs: { label: string; unit?: string }[];
+}
+
+export interface GalleryImage {
+  id: string;
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  category: "uti" | "heimili" | "tafla" | "rafgeymar" | "fjarskipti" | "husbill" | "verkstaedi";
 }
 
 export interface TeamMember {

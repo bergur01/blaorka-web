@@ -17,6 +17,8 @@ export default function AboutPage() {
         eyebrow="Um okkur"
         title="Við lifum á rafmagni"
         lead="Bláorka er íslenskt fyrirtæki sem hannar, smíðar og þjónustar sjálfstæð raforkukerfi. Við trúum því að hver sem er geti átt sína eigin orku – hvar sem er á landinu."
+        image="/photos/stasetning-komdu-vi-dji_0123.webp"
+        imagePosition="center 62%"
       />
 
       <Section tone="white">
@@ -45,8 +47,8 @@ export default function AboutPage() {
             <div className="relative">
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
                 <Image
-                  src="/news/thriggja-fasa-hus-med-so-4d135b.webp"
-                  alt="Uppsetning á þriggja fasa sólarorkukerfi"
+                  src="/photos/komdu-vi-hja-blaorku-15a2772.webp"
+                  alt="Verslun Bláorku að Fosshálsi 27"
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
@@ -118,9 +120,22 @@ export default function AboutPage() {
 
       <Section tone="white">
         <Container>
+          <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
+            <Image
+              src="/photos/stasetning-komdu-vi-dji_0123.webp"
+              alt="Fossháls 27 úr lofti"
+              fill
+              sizes="(min-width: 1280px) 1200px, 100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-900/80 to-transparent p-6 text-white sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-volt-300">Fossháls 27</p>
+              <p className="mt-1 font-display text-2xl font-semibold">Verslun og lager á einum stað</p>
+            </div>
+          </div>
           <div className="grid gap-10 rounded-3xl border border-mist-200 bg-mist-50 p-8 sm:p-12 lg:grid-cols-3">
             <div>
-              <Eyebrow className="mb-3">Verslun & verkstæði</Eyebrow>
+              <Eyebrow className="mb-3">Verslun</Eyebrow>
               <p className="font-display text-xl font-semibold">{site.address.street}</p>
               <p className="text-ink-900/70">
                 {site.address.postal} {site.address.city}

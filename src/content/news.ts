@@ -4,6 +4,42 @@
 import type { NewsPost } from "@/lib/types";
 
 export const newsSeed: NewsPost[] = [
+{
+  "slug": "slorfell-mila-orkuskipti-fjarskiptastadar",
+  "title": "Slórfell: síðasta síkeyrsla Mílu hætt með rafgeymum, sól og vindi",
+  "date": "2026-08-25",
+  "excerpt": "Bláorka vann með Mílu að nýju orkukerfi fyrir fjarskiptastaðinn á Slórfelli á Möðrudalsöræfum – 60 kWst rafgeymar, 11 kW sólarsellur og 800 W vindmylla leysa dísilrafstöð af sem gekk allan sólarhringinn.",
+  "body": [
+    "⚡️ Stolt af verkefni sem skiptir máli",
+    "Við hjá Bláorku erum virkilega ánægð með að hafa unnið með Mílu að nýju orkukerfi fyrir fjarskiptastaðinn á Slórfelli.",
+    "Staðurinn hafði áður verið keyrður á dísilrafstöð allan sólarhringinn, allt árið. Með 60 kWh rafgeymakerfi, 11 kW sólarsellum og 800 W vindmyllu hefur nú tekist að draga verulega úr keyrslu rafstöðvarinnar og áætlað er að olíunotkun fari úr um 12.000 lítrum á ári niður í 6.000 lítra.",
+    "Verkefnið sýnir vel hvað hægt er að gera með réttri blöndu af rafgeymum, sólarorku, vindorku og sjálfvirkri varaaflsstýringu – jafnvel á afskekktum stöðum þar sem ekkert dreifikerfi er til staðar.",
+    "Þetta er nákvæmlega sú tegund verkefna sem við hjá Bláorku viljum taka þátt í: minni eldsneytisnotkun, lægri rekstrarkostnaður og hreinni orka – án þess að fórna rekstraröryggi.",
+    "Við þökkum Mílu fyrir frábært samstarf og traustið. 💙⚡️",
+    "Kerfið í hnotskurn:",
+    "60 kWst LiFePO4 rafgeymakerfi",
+    "11 kW sólarsellur",
+    "800 W vindmylla",
+    "Sjálfvirk varaaflsstýring á dísilrafstöð",
+    "Áætlaður olíusparnaður: 12.000 → 6.000 lítrar á ári",
+    "Vísir fjallaði um verkefnið 25. ágúst: Slórfell var síðasti fjarskiptastaður Mílu þar sem dísilrafstöð var í samfelldri keyrslu allan sólarhringinn – svokallaðri síkeyrslu – og með nýja kerfinu hefur tekist að draga verulega úr olíunotkun og losun gróðurhúsalofttegunda."
+  ],
+  "images": [
+    "/gallery/36.webp",
+    "/gallery/35.webp"
+  ],
+  "category": "Fjarskipti",
+  "links": [
+    {
+      "label": "Umfjöllun Vísis: „Hætta að keyra fjarskiptastaði með ljósavélum“",
+      "url": "https://www.visir.is/g/20262925968d/haetta-ad-keyra-fjarskiptastadi-med-ljosavelum"
+    },
+    {
+      "label": "Bláorka á Facebook",
+      "url": "https://facebook.com/blaorka.is"
+    }
+  ]
+},
   {
     "slug": "eyja-i-breidafirdi",
     "title": "Eyja í Breiðafirði",
@@ -315,23 +351,6 @@ export const newsSeed: NewsPost[] = [
       "/news/alveg-sjalfbaer-ford-hus-7ad82a.webp"
     ],
     "category": "Húsbílar"
-  },
-  {
-    "slug": "isskapar-isskapar-maettir-i-hus",
-    "title": "ÍSSKÁPAR ÍSSKÁPAR MÆTTIR Í HÚS.",
-    "date": "2022-05-27",
-    "excerpt": "Opið til 17.00 í dag, komdu og náðu þér í ísskáp eða kælibox fyrir helgina",
-    "body": [
-      "Opið til 17.00 í dag, komdu og náðu þér í ísskáp eða kælibox fyrir helgina"
-    ],
-    "images": [
-      "/news/isskapar-isskapar-maetti-cae5bc.webp",
-      "/news/isskapar-isskapar-maetti-5fe0f4.webp",
-      "/news/isskapar-isskapar-maetti-21d69c.webp",
-      "/news/isskapar-isskapar-maetti-c6c705.webp",
-      "/news/isskapar-isskapar-maetti-4e521e.webp"
-    ],
-    "category": "Vörur"
   },
   {
     "slug": "hjalparsveit-skata-kopur-1",
