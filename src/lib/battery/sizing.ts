@@ -6,15 +6,14 @@
 // reiknivéla: 80 % afhleðsludýpt og 94 % nýtni áriðils.
 
 import { makeFormatter } from "@/lib/format";
+import { BATT_DISCHARGE_EFF, INVERTER_EFF as SOLAR_INVERTER_EFF } from "@/lib/solar/sizing";
 
 export const fmt = makeFormatter(0);
 export const fmt1 = makeFormatter(1);
 export const fmt2 = makeFormatter(2);
 
-/** Nýtni áriðils (DC → AC) – sama tala og í sólarorkureiknivélinni. */
-export const INVERTER_EFF = 0.94;
-/** Nýtni rafgeymis inn og út (LiFePO4 skilar nær öllu sem sett er inn). */
-export const ROUND_TRIP = 0.96;
+/** Nýtni áriðils (DC → AC) – sótt í sólarorkureiknivélina svo tölurnar stemmi. */
+export const INVERTER_EFF = SOLAR_INVERTER_EFF;
 
 export type Chemistry = "lifepo4" | "agm";
 
@@ -25,8 +24,10 @@ export interface ChemistryInfo {
   dod: number;
   /** Hleðslulotur við þá dýpt */
   cycles: number;
-  /** Nýtni inn og út */
+  /** Nýtni inn og út – til samanburðar milli efna */
   roundTrip: number;
+  /** Nýtni við afhleðslu; það er hún sem ræður hvað kemur út úr bankanum */
+  dischargeEff: number;
   /** Varfærinn samfelldur afhleðslustraumur sem hlutfall af rýmd (C) */
   maxDischargeC: number;
   /** Ráðlagður hleðslustraumur sem hlutfall af rýmd (C) */
@@ -41,6 +42,7 @@ export const CHEMISTRY: Record<Chemistry, ChemistryInfo> = {
     dod: 0.8,
     cycles: 6000,
     roundTrip: 0.96,
+    dischargeEff: BATT_DISCHARGE_EFF,
     maxDischargeC: 0.5,
     chargeC: 0.3,
     note: "Þolir djúpa afhleðslu, skilar fullu afli niður í botn og endist þúsundir lota.",
@@ -51,6 +53,7 @@ export const CHEMISTRY: Record<Chemistry, ChemistryInfo> = {
     dod: 0.5,
     cycles: 600,
     roundTrip: 0.85,
+    dischargeEff: 0.9,
     maxDischargeC: 0.2,
     chargeC: 0.15,
     note: "Má ekki tæma nema til hálfs og tapar rými við mikinn straum (Peukert).",
@@ -210,7 +213,7 @@ export function computeBank(input: BankInput): BankResult {
   const totalKwh = unitKwh(input) * input.count;
   const cold = input.cold ? COLD_FACTOR : 1;
   const usableKwh = totalKwh * input.dod * cold;
-  const acKwh = usableKwh * chem.roundTrip * INVERTER_EFF;
+  const acKwh = usableKwh * chem.dischargeEff * INVERTER_EFF;
 
   const dcW = input.loadW / INVERTER_EFF;
   const bankVolts = input.volts * wiring(input.volts, input.systemVoltage, input.count).series;
@@ -269,7 +272,7 @@ export function computeNeed(input: NeedInput): NeedResult {
   const chem = CHEMISTRY[input.chemistry];
   const cold = input.cold ? COLD_FACTOR : 1;
   const neededUsableKwh = input.dailyKwh * input.days;
-  const neededNominalKwh = neededUsableKwh / (chem.roundTrip * INVERTER_EFF) / input.dod / cold;
+  const neededNominalKwh = neededUsableKwh / (chem.dischargeEff * INVERTER_EFF) / input.dod / cold;
   const per = unitKwh(input);
   const series = wiring(input.volts, input.systemVoltage, 99).series;
   const rows = Math.max(1, Math.ceil(neededNominalKwh / (per * series)));

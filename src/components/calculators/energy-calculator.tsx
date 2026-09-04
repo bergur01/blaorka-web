@@ -221,7 +221,7 @@ export function EnergyCalculator() {
               <Icon name="battery" className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
               <span>
                 Til að komast í gegnum <strong>einn dag án sólar</strong> þarf um{" "}
-                <strong className="text-ink-900">{banksPerDay} × {BANK_KWH} kWst</strong> Bláorku rafgeymabanka ({fmt.format(banksPerDay * BANK_KWH)} kWst, {fmt.format(DOD * 100)} % afhleðsla).
+                <strong className="text-ink-900">{banksPerDay} × {fmt1.format(BANK_KWH)} kWst</strong> Bláorku rafgeymabanka ({fmt.format(banksPerDay * BANK_KWH)} kWst, {fmt.format(DOD * 100)} % afhleðsla).
               </span>
             </li>
             <li className="flex gap-3">

@@ -469,7 +469,7 @@ export function BatteryCalculator() {
               <li className="flex gap-3">
                 <span className="font-display font-semibold text-brand-500">2</span>
                 <span>
-                  Að teknu tilliti til {Math.round(dod * 100)} % afhleðslu, {Math.round(chem.roundTrip * 100)} % nýtni
+                  Að teknu tilliti til {Math.round(dod * 100)} % afhleðslu, {Math.round(chem.dischargeEff * 100)} % nýtni
                   rafgeymis og 94 % nýtni áriðils{cold ? " og kulda" : ""} kallar það á{" "}
                   <strong className="text-ink-900">{fmt1.format(need.neededNominalKwh)} kWst</strong> nafnrýmd.
                 </span>

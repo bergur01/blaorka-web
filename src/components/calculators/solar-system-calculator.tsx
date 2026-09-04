@@ -17,6 +17,7 @@ import {
   PANEL_W,
   computeSizing,
   fmt,
+  fmt2,
   fmt1,
   rankAspects,
   recommendedTilt,
@@ -171,7 +172,7 @@ export function SolarSystemCalculator({
     result && bestAvailable
       ? [
           "Forsendur úr reiknivél (blaorka.is/reiknivelar/solarorkukerfi):",
-          `Staður: ${locationId === "custom" ? "eigin hnit" : location.name} (${lat.toFixed(2)}, ${lon.toFixed(2)})`,
+          `Staður: ${locationId === "custom" ? "eigin hnit" : location.name} (${fmt2.format(lat)}, ${fmt2.format(lon)})`,
           `Notkun: ${fmt1.format(dailyKwh)} kWst/dag, hámark ${fmt1.format(peakKw)} kW, ${phase === 3 ? "þriggja fasa" : "einfasa"}`,
           ...(deviceMode
             ? [
@@ -197,7 +198,7 @@ export function SolarSystemCalculator({
               ]
             : []),
           "",
-          `Tillaga: ${fmt1.format(result.kWp)} kWp (${result.panels} × ${PANEL_W} W), ${result.battery.banks} × ${BANK_KWH} kWst rafgeymabanki, ${result.inverter.count} × ${result.inverter.model}, ${result.mppt.count} × ${result.mppt.model}`,
+          `Tillaga: ${fmt1.format(result.kWp)} kWp (${result.panels} × ${PANEL_W} W), ${result.battery.banks} × ${fmt1.format(BANK_KWH)} kWst rafgeymabanki, ${result.inverter.count} × ${result.inverter.model}, ${result.mppt.count} × ${result.mppt.model}`,
         ].join("\n")
       : "";
 
@@ -225,7 +226,7 @@ export function SolarSystemCalculator({
             </label>
             <div className="flex items-end text-xs text-ink-900/50">
               <span className="pb-3">
-                {lat.toFixed(2)}° N, {Math.abs(lon).toFixed(2)}° V
+                {fmt2.format(lat)}° N, {fmt2.format(Math.abs(lon))}° V
               </span>
             </div>
           </div>
@@ -463,7 +464,7 @@ export function SolarSystemCalculator({
             {profiles && (
               <p className="px-2 text-xs leading-relaxed text-ink-900/45">
                 Gögn: {profiles.db} (PVGIS 5.3, JRC). Forsendur: 14 % kerfistap, {PANEL_W} W sellur,{" "}
-                {BANK_KWH} kWst Bláorku LiFePO4 bankar, 80 % afhleðsludýpt. Niðurstöður eru leiðbeinandi –
+                {fmt1.format(BANK_KWH)} kWst Bláorku LiFePO4 bankar, 80 % afhleðsludýpt. Niðurstöður eru leiðbeinandi –
                 skuggar, snjór og staðbundið veður hafa áhrif. Við förum yfir tillöguna með þér.
               </p>
             )}
@@ -714,7 +715,7 @@ function ResultHero({
               icon="battery"
               label={result.manual.battery ? "Rafgeymabanki · handvirkt" : "Rafgeymabanki"}
               value={`${fmt.format(result.battery.kWh)} kWst`}
-              sub={`${result.battery.banks} × ${BANK_KWH} kWst · dugar ${fmt1.format(result.battery.autonomyDays)} daga`}
+              sub={`${result.battery.banks} × ${fmt1.format(BANK_KWH)} kWst · dugar ${fmt1.format(result.battery.autonomyDays)} daga`}
             />
             <Stat
               icon="wave"
@@ -838,14 +839,14 @@ function FineTune({
             className="mt-3 w-full accent-brand-500"
             aria-label="Sólarafl í kWp"
           />
-          <Ticks left={`${kwpStep} kWp`} mid={`Tillaga ${fmt1.format(result.recommended.kWp)}`} right={`${kwpMax} kWp`} midPct={(result.recommended.kWp / kwpMax) * 100} />
+          <Ticks left={`${fmt2.format(kwpStep)} kWp`} mid={`Tillaga ${fmt1.format(result.recommended.kWp)}`} right={`${fmt.format(kwpMax)} kWp`} midPct={(result.recommended.kWp / kwpMax) * 100} />
         </TuneRow>
 
         <TuneRow
           icon="battery"
           label="Rafgeymarýmd"
           value={`${fmt.format(result.battery.kWh)} kWst`}
-          sub={`${result.battery.banks} × ${BANK_KWH} kWst · ${fmt.format(result.battery.usableKwh)} kWst nýtanleg · dugar ${fmt1.format(result.battery.autonomyDays)} daga án sólar`}
+          sub={`${result.battery.banks} × ${fmt1.format(BANK_KWH)} kWst · ${fmt.format(result.battery.usableKwh)} kWst nýtanleg · dugar ${fmt1.format(result.battery.autonomyDays)} daga án sólar`}
           manual={result.manual.battery}
           diff={kwhDiff === 0 ? null : `${kwhDiff > 0 ? "+" : "−"}${fmt.format(Math.abs(kwhDiff))} kWst miðað við tillögu (${fmt.format(result.recommended.kWh)} kWst)`}
           onReset={() => onKwh(null)}
@@ -860,7 +861,7 @@ function FineTune({
             className="mt-3 w-full accent-brand-500"
             aria-label="Rafgeymarýmd í kWst"
           />
-          <Ticks left={`${BANK_KWH} kWst`} mid={`Tillaga ${fmt.format(result.recommended.kWh)}`} right={`${kwhMax} kWst`} midPct={(result.recommended.kWh / kwhMax) * 100} />
+          <Ticks left={`${fmt1.format(BANK_KWH)} kWst`} mid={`Tillaga ${fmt.format(result.recommended.kWh)}`} right={`${fmt.format(kwhMax)} kWst`} midPct={(result.recommended.kWh / kwhMax) * 100} />
         </TuneRow>
       </div>
     </div>

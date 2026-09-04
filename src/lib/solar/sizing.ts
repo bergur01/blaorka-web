@@ -73,9 +73,11 @@ export const PANEL_W = 455; // W per sella – sellan sem Bláorka selur
 export const PANEL_DIMS = { length: 1762, width: 1134, depth: 30 } as const;
 /** Flatarmál einnar sellu, m² */
 export const PANEL_AREA_M2 = (PANEL_DIMS.length * PANEL_DIMS.width) / 1e6;
-export const BANK_KWH = 10; // Bláorku 51,2 V 200 Ah = 10,24 kWst, talað um sem 10 kWst
+export const BANK_KWH = 10.24; // Bláorku 51,2 V 200 Ah: 51,2 V × 200 Ah = 10,24 kWst
 export const DOD = 0.8; // nýtanleg afhleðsludýpt
 export const INVERTER_EFF = 0.94;
+/** Nýtni rafgeymis við afhleðslu (LiFePO4). Hleðslutapið liggur hinum megin. */
+export const BATT_DISCHARGE_EFF = 0.98;
 
 interface InverterModel {
   name: string;
@@ -137,7 +139,7 @@ export function computeSizing(input: SizingInput): SizingResult {
 
   // Rafgeymar: dagar án sólar × dagleg notkun, leiðrétt fyrir DoD og áriðilstapi
   const usableNeeded = dailyKwh * autonomyDays;
-  const grossNeeded = usableNeeded / DOD / INVERTER_EFF;
+  const grossNeeded = usableNeeded / DOD / INVERTER_EFF / BATT_DISCHARGE_EFF;
   const recBanks = Math.max(1, Math.ceil(grossNeeded / BANK_KWH));
   const manualBattery = overrideBatteryKwh != null && overrideBatteryKwh > 0;
   const banks = manualBattery ? Math.max(1, Math.round(overrideBatteryKwh / BANK_KWH)) : recBanks;
@@ -175,7 +177,7 @@ export function computeSizing(input: SizingInput): SizingResult {
       banks,
       kWh: banks * BANK_KWH,
       usableKwh: banks * BANK_KWH * DOD,
-      autonomyDays: dailyKwh > 0 ? (banks * BANK_KWH * DOD * INVERTER_EFF) / dailyKwh : 0,
+      autonomyDays: dailyKwh > 0 ? (banks * BANK_KWH * DOD * INVERTER_EFF * BATT_DISCHARGE_EFF) / dailyKwh : 0,
     },
     inverter: { model: model.name, count, totalKva },
     mppt,
@@ -204,3 +206,4 @@ export function rankAspects(profiles: SolarProfiles, goal: Goal) {
 
 export const fmt = makeFormatter(0);
 export const fmt1 = makeFormatter(1);
+export const fmt2 = makeFormatter(2);
