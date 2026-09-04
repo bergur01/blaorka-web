@@ -75,7 +75,7 @@ export function SiteHeader() {
             href={site.shopUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex h-10 items-center gap-2 rounded-full bg-brand-500 px-4 text-sm font-semibold text-white transition hover:bg-brand-400"
+            className="btn-shine group inline-flex h-10 items-center gap-2 rounded-full bg-brand-500 px-4 text-sm font-semibold text-white transition hover:bg-brand-400"
           >
             Vefverslun
             <ExternalArrow className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

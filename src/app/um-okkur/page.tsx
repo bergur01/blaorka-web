@@ -24,7 +24,7 @@ export default function AboutPage() {
       <Section tone="white">
         <Container>
           <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
-            <div>
+            <div data-reveal="left">
               <Eyebrow className="mb-4">Sagan</Eyebrow>
               <Heading>Frá NetBerg til Bláorku</Heading>
               <div className="mt-6 space-y-5 text-lg leading-relaxed text-ink-900/75">
@@ -44,7 +44,7 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-            <div className="relative">
+            <div data-reveal="right" className="relative">
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
                 <Image
                   src="/photos/komdu-vi-hja-blaorku-15a2772.webp"
@@ -67,7 +67,7 @@ export default function AboutPage() {
       <Section tone="dark">
         <div className="absolute inset-0 bg-grid-dark [mask-image:linear-gradient(to_bottom,transparent,black_40%,black_60%,transparent)]" />
         <Container className="relative">
-          <dl className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+          <dl data-reveal-stagger className="grid grid-cols-2 gap-8 lg:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="border-l border-volt-500/40 pl-5">
                 <dd className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">{s.value}</dd>
@@ -80,14 +80,14 @@ export default function AboutPage() {
 
       <Section tone="light">
         <Container>
-          <div className="max-w-2xl">
+          <div data-reveal className="max-w-2xl">
             <Eyebrow className="mb-4">Starfsfólk</Eyebrow>
             <Heading>Fólkið á bak við kerfin</Heading>
             <Lead className="mt-4 text-ink-900/65">
               Lítið teymi með mikla reynslu – þú talar alltaf beint við þann sem hannar kerfið þitt.
             </Lead>
           </div>
-          <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul data-reveal-stagger className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((m) => (
               <li
                 key={m.name}
@@ -120,7 +120,7 @@ export default function AboutPage() {
 
       <Section tone="white">
         <Container>
-          <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
+          <div data-reveal="scale" className="relative mb-8 aspect-[21/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
             <Image
               src="/photos/stasetning-komdu-vi-dji_0123.webp"
               alt="Fossháls 27 úr lofti"
@@ -133,7 +133,7 @@ export default function AboutPage() {
               <p className="mt-1 font-display text-2xl font-semibold">Verslun og lager á einum stað</p>
             </div>
           </div>
-          <div className="grid gap-10 rounded-3xl border border-mist-200 bg-mist-50 p-8 sm:p-12 lg:grid-cols-3">
+          <div data-reveal-stagger className="grid gap-10 rounded-3xl border border-mist-200 bg-mist-50 p-8 sm:p-12 lg:grid-cols-3">
             <div>
               <Eyebrow className="mb-3">Verslun</Eyebrow>
               <p className="font-display text-xl font-semibold">{site.address.street}</p>

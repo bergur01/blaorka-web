@@ -57,11 +57,11 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
       <Section tone="light">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
-            <div>
+            <div data-reveal>
               <Eyebrow className="mb-4">Um lausnina</Eyebrow>
               <p className="text-lg leading-relaxed text-ink-900/80">{solution.description}</p>
 
-              <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+              <ul data-reveal-stagger className="mt-10 grid gap-4 sm:grid-cols-2">
                 {solution.highlights.map((h) => (
                   <li
                     key={h}
@@ -76,7 +76,7 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
               </ul>
             </div>
 
-            <aside className="lg:sticky lg:top-28 lg:self-start">
+            <aside data-reveal="right" className="lg:sticky lg:top-28 lg:self-start">
               <Card className="p-7">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500 text-white">
@@ -97,7 +97,7 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
               </Card>
 
               <div className="relative mt-6 overflow-hidden rounded-3xl bg-ink-900 p-7 text-white">
-                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-500/30 blur-[70px]" />
+                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-500/30 blur-[70px] animate-aurora" />
                 <div className="relative">
                   <ContactForm
                     variant="compact"
@@ -133,7 +133,7 @@ export default async function SolutionPage({ params }: { params: Promise<Params>
           <Container>
             <Eyebrow className="mb-4">Verkefni</Eyebrow>
             <Heading size="md">Svona kerfi höfum við sett upp</Heading>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div data-reveal-stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
                 <NewsCard key={p.slug} post={p} />
               ))}

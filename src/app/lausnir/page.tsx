@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getSolutions } from "@/lib/content";
 import { Button, Container, PageHero, Section } from "@/components/ui";
 import { ArrowRight, Icon } from "@/components/icons";
+import { IcelandMap } from "@/components/iceland-map";
 
 export const metadata: Metadata = {
   title: "Lausnir",
@@ -21,10 +22,11 @@ export default async function SolutionsPage() {
         lead="Við hönnum hvert kerfi út frá aðstæðum, notkun og framtíðarþörfum. Hér eru algengustu tegundir verkefna sem við tökum að okkur."
         image="/gallery/21.webp"
         imagePosition="center 40%"
+        aside={<IcelandMap className="w-full" />}
       />
       <Section tone="light">
         <Container>
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div data-reveal-stagger className="grid gap-6 lg:grid-cols-2">
             {solutions.map((s) => (
               <Link
                 key={s.slug}
@@ -61,8 +63,9 @@ export default async function SolutionsPage() {
             ))}
           </div>
 
-          <div className="mt-16 rounded-3xl bg-ink-900 p-8 text-white sm:p-12">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div data-reveal className="relative mt-16 overflow-hidden rounded-3xl bg-ink-900 p-8 text-white sm:p-12">
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-500/30 blur-[80px] animate-aurora" />
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="font-display text-2xl font-semibold tracking-tight">
                   Passar ekkert af þessu?

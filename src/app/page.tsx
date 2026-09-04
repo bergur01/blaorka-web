@@ -22,6 +22,7 @@ import { LogoMark } from "@/components/logo";
 import { NewsCard } from "@/components/news-card";
 import { Gallery } from "@/components/gallery";
 import { EnergyFlow } from "@/components/energy-flow";
+import { Parallax } from "@/components/parallax";
 
 export default async function HomePage() {
   const [news, solutions, calculators, gallery] = await Promise.all([
@@ -39,38 +40,38 @@ export default async function HomePage() {
     <>
       {/* ---------------- HERO ---------------- */}
       <section className="relative isolate overflow-hidden bg-ink-900 text-white">
-        <div className="absolute inset-0 -z-10">
+        <Parallax speed={0.35} className="absolute inset-0 -z-10">
           <Image
             src="/gallery/hero.webp"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-40"
+            className="anim-kenburns object-cover object-center opacity-40"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ink-900/70 via-ink-900/80 to-ink-900" />
           <div className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
-          <div className="absolute -top-32 left-1/3 h-[36rem] w-[36rem] rounded-full bg-brand-500/30 blur-[140px]" />
+          <div className="absolute -top-32 left-1/3 h-[36rem] w-[36rem] rounded-full bg-brand-500/30 blur-[140px] animate-aurora" />
           <div className="absolute bottom-0 right-[-8rem] h-[28rem] w-[28rem] rounded-full bg-volt-500/20 blur-[120px] animate-float" />
-        </div>
+        </Parallax>
 
         <Container className="pt-40 pb-24 sm:pt-48 sm:pb-32 lg:pt-56 lg:pb-40">
           <div className="grid items-center gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:gap-8">
             <div className="max-w-4xl">
-              <div className="mb-8 flex flex-wrap items-center gap-3">
+              <div className="anim-rise mb-8 flex flex-wrap items-center gap-3 [--d:80ms]">
                 <Badge tone="volt">Sólarorka · Rafgeymar · Ótengd kerfi</Badge>
                 <span className="text-sm text-white/55">{site.tagline}</span>
               </div>
-              <Heading as="h1" size="xl">
+              <Heading as="h1" size="xl" className="anim-rise [--d:160ms]">
                 Þín eigin <span className="text-gradient">orka</span> –
                 <br className="hidden sm:block" /> hvar sem er á landinu.
               </Heading>
-              <Lead className="mt-8 max-w-2xl text-white/70">
+              <Lead className="anim-rise mt-8 max-w-2xl text-white/70 [--d:280ms]">
                 Bláorka hannar og smíðar sólarorkukerfi með LiFePO4 rafgeymum
                 fyrir heimili, sumarhús, húsbíla, báta og fjarskiptastaði. Frá
                 einni sellu á þaki upp í þriggja fasa kerfi fyrir heila eyju.
               </Lead>
-              <div className="mt-10 flex flex-wrap items-center gap-4">
+              <div className="anim-rise mt-10 flex flex-wrap items-center gap-4 [--d:400ms]">
                 <Button href="/lausnir" size="lg">
                   Skoða lausnir
                 </Button>
@@ -85,11 +86,11 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <EnergyFlow className="w-full max-w-lg justify-self-center xl:max-w-none" />
+            <EnergyFlow className="anim-scale w-full max-w-lg justify-self-center xl:max-w-none [--d:550ms]" />
           </div>
 
           {/* Tölur */}
-          <dl className="mt-14 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/10 pt-7 sm:mt-20 lg:justify-between">
+          <dl className="anim-rise mt-14 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/10 pt-7 sm:mt-20 lg:justify-between [--d:750ms]">
             {stats.map((s) => (
               <div key={s.label} className="flex items-baseline gap-2">
                 <dt className="order-last text-sm text-white/55">{s.label}</dt>
@@ -105,7 +106,7 @@ export default async function HomePage() {
       {/* ---------------- LAUSNIR ---------------- */}
       <Section tone="light" id="lausnir">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div data-reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <Eyebrow className="mb-4">Lausnir</Eyebrow>
               <Heading>Kerfi sem passa þínum aðstæðum</Heading>
@@ -118,7 +119,7 @@ export default async function HomePage() {
             <TextLink href="/lausnir">Allar lausnir</TextLink>
           </div>
 
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal-stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {solutions.map((s, i) => (
               <Link
                 key={s.slug}
@@ -128,7 +129,7 @@ export default async function HomePage() {
                 }`}
               >
                 <div>
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500 ring-1 ring-brand-100 transition group-hover:bg-brand-500 group-hover:text-white">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500 ring-1 ring-brand-100 transition duration-300 group-hover:-rotate-6 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white">
                     <Icon name={s.icon} className="h-6 w-6" />
                   </span>
                   <h3 className="mt-6 font-display text-xl font-semibold tracking-tight">
@@ -151,10 +152,10 @@ export default async function HomePage() {
       {/* ---------------- HVERNIG VIRKAR ÞAÐ ---------------- */}
       <Section tone="dark" className="overflow-hidden">
         <div className="absolute inset-0 bg-grid-dark [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_70%,transparent)]" />
-        <div className="absolute -right-40 top-1/2 h-[30rem] w-[30rem] -translate-y-1/2 rounded-full bg-brand-500/20 blur-[130px]" />
+        <div className="absolute -right-40 top-1/2 h-[30rem] w-[30rem] -translate-y-1/2 rounded-full bg-brand-500/20 blur-[130px] animate-aurora" />
         <Container className="relative">
           <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
-            <div>
+            <div data-reveal="left">
               <Eyebrow tone="volt" className="mb-4">
                 Hvernig virkar það
               </Eyebrow>
@@ -210,7 +211,7 @@ export default async function HomePage() {
             </div>
 
             {/* Kerfismynd – skýringarmynd */}
-            <div className="relative">
+            <div data-reveal="right" className="relative">
               <div className="glass rounded-[2rem] p-6 sm:p-8">
                 <SystemDiagram />
               </div>
@@ -231,7 +232,7 @@ export default async function HomePage() {
       <Section tone="white">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-start">
-            <div className="lg:sticky lg:top-32">
+            <div data-reveal className="lg:sticky lg:top-32">
               <Eyebrow className="mb-4">Reiknivélar</Eyebrow>
               <Heading>Reiknaðu þitt eigið kerfi</Heading>
               <Lead className="mt-4 text-ink-900/65">
@@ -242,7 +243,7 @@ export default async function HomePage() {
                 <Button href="/reiknivelar">Allar reiknivélar</Button>
               </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div data-reveal-stagger className="grid gap-4 sm:grid-cols-2">
               {calculators.map((c) => (
                 <Link
                   key={c.slug}
@@ -250,7 +251,7 @@ export default async function HomePage() {
                   className="group rounded-3xl border border-mist-200 bg-mist-50 p-6 transition hover:border-brand-300 hover:bg-white hover:shadow-card"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white text-brand-500 ring-1 ring-mist-200 group-hover:bg-brand-500 group-hover:text-white">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white text-brand-500 ring-1 ring-mist-200 transition duration-300 group-hover:-rotate-6 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white">
                       <Icon name={c.icon} className="h-5 w-5" />
                     </span>
                     {c.status === "soon" && (
@@ -273,14 +274,14 @@ export default async function HomePage() {
       {/* ---------------- MYNDIR ---------------- */}
       <Section tone="white">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div data-reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <Eyebrow className="mb-4">Verkefni í myndum</Eyebrow>
               <Heading>Úr sumarhúsum, af fjöllum og út í eyjar</Heading>
             </div>
             <TextLink href="/verkefni">Allar myndir</TextLink>
           </div>
-          <div className="mt-12">
+          <div data-reveal="scale" className="mt-12">
             <Gallery images={featured} columns={4} />
           </div>
         </Container>
@@ -289,14 +290,14 @@ export default async function HomePage() {
       {/* ---------------- FRÉTTIR ---------------- */}
       <Section tone="light">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div data-reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <Eyebrow className="mb-4">Fréttir & verkefni</Eyebrow>
               <Heading>Nýjast frá Bláorku</Heading>
             </div>
             <TextLink href="/frettir">Allar fréttir</TextLink>
           </div>
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div data-reveal-stagger className="mt-12 grid gap-6 lg:grid-cols-3">
             {news.map((p) => (
               <NewsCard key={p.slug} post={p} />
             ))}
@@ -308,7 +309,7 @@ export default async function HomePage() {
       <Section tone="white">
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:items-center">
-            <div>
+            <div data-reveal="left">
               <Eyebrow className="mb-4">Komdu við</Eyebrow>
               <Heading>Verslunin í Fosshálsi</Heading>
               <Lead className="mt-4 text-ink-900/65">
@@ -336,7 +337,7 @@ export default async function HomePage() {
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div data-reveal-stagger="scale" className="grid grid-cols-2 gap-4">
               <div className="relative col-span-2 aspect-[16/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
                 <Image
                   src="/photos/komdu-vi-hja-blaorku-15a2772.webp"
@@ -372,9 +373,10 @@ export default async function HomePage() {
       {/* ---------------- CTA ---------------- */}
       <Section tone="dark" className="overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-700 via-ink-900 to-ink-950" />
-        <div className="absolute -top-24 right-1/4 h-80 w-80 rounded-full bg-volt-500/25 blur-[110px]" />
+        <div className="absolute -top-24 right-1/4 h-80 w-80 rounded-full bg-volt-500/25 blur-[110px] animate-aurora" />
+        <div className="absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-brand-400/20 blur-[100px] animate-aurora-slow" />
         <Container className="relative">
-          <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
+          <div data-reveal className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
               <LogoMark className="mb-8 h-12 w-auto" />
               <Heading>Viltu eigið rafmagn, óháð netinu?</Heading>
@@ -476,7 +478,28 @@ function SystemDiagram() {
         <path d="M200 150 C 270 150, 270 70, 330 70" />
         <path d="M200 150 C 270 150, 270 230, 330 230" />
       </g>
-      <style>{`@keyframes dash{to{stroke-dashoffset:-234}}`}</style>
+      <style>{`
+        @keyframes dash{to{stroke-dashoffset:-234}}
+        .sys-dot{animation:sys-dot 3s linear infinite}
+        .sys-dot-b{animation-delay:-1.5s}
+        @keyframes sys-dot{0%{offset-distance:0%;opacity:0}12%{opacity:1}88%{opacity:1}100%{offset-distance:100%;opacity:0}}
+        .sys-pulse{transform-box:fill-box;transform-origin:center;animation:sys-pulse 3s ease-out infinite}
+        @keyframes sys-pulse{0%{transform:scale(.85);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+      `}</style>
+      <g fill="#7ee8f5">
+        {[
+          "M70 70 C 130 70, 130 150, 200 150",
+          "M70 230 C 130 230, 130 150, 200 150",
+          "M200 150 C 270 150, 270 70, 330 70",
+          "M200 150 C 270 150, 270 230, 330 230",
+        ].map((d, i) => (
+          <g key={d}>
+            <circle className="sys-dot" r="3" style={{ offsetPath: `path("${d}")`, animationDelay: `${i * -0.75}s` }} />
+            <circle className="sys-dot sys-dot-b" r="3" style={{ offsetPath: `path("${d}")` }} />
+          </g>
+        ))}
+      </g>
+      <circle className="sys-pulse" cx="200" cy="150" r="52" fill="none" stroke="#4bd8ec" strokeWidth="1.5" />
 
       {node(
         60,

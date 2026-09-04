@@ -47,7 +47,12 @@
   --shadow-card: 0 1px 2px rgb(7 20 35 / 0.06), 0 12px 32px -12px rgb(7 20 35 / 0.18);
 
   --animate-float: float 8s ease-in-out infinite;
+  --animate-float-slow: float 14s ease-in-out infinite reverse;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-aurora: aurora 16s ease-in-out infinite;
+  --animate-aurora-slow: aurora 22s ease-in-out infinite reverse;
+  --animate-flicker: flicker 6s linear infinite;
+  --animate-spin-slow: spin 40s linear infinite;
 
   @keyframes float {
     0%,
@@ -57,6 +62,35 @@
     50% {
       transform: translateY(-18px) translateX(8px);
     }
+  }
+
+  /* Norðurljósa-blettir: reika hægt um flötinn */
+  @keyframes aurora {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(70px, -40px) scale(1.15);
+    }
+    66% {
+      transform: translate(-50px, 30px) scale(0.92);
+    }
+  }
+
+  /* Biluð ljósapera (404) */
+  @keyframes flicker {
+    0%, 100% { opacity: 0.18; }
+    3% { opacity: 0.9; }
+    5% { opacity: 0.12; }
+    7% { opacity: 0.8; }
+    9% { opacity: 0.18; }
+    47% { opacity: 0.18; }
+    49% { opacity: 0.7; }
+    51% { opacity: 0.18; }
+    80% { opacity: 0.18; }
+    81% { opacity: 0.6; }
+    83% { opacity: 0.18; }
   }
 }
 
@@ -157,6 +191,169 @@ body {
   }
 }
 
+/* Glans sem rennur yfir hnapp við hover */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgb(255 255 255 / 0.28) 50%,
+      transparent 75%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  &:hover::after {
+    transform: translateX(130%);
+  }
+}
+
+/* Lárétt lína með glóandi orkupunkti sem rennur eftir henni (footer) */
+@utility energy-line {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 0;
+    height: 5px;
+    width: 160px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, transparent, var(--color-volt-400), transparent);
+    filter: blur(1px);
+    animation: energy-line 9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes energy-line {
+  from {
+    transform: translateX(-180px);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hreyfing
+   ------------------------------------------------------------------ */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Innkoma við hleðslu síðu (hero): .anim-rise með --d fyrir seinkun */
+.anim-rise {
+  animation: reveal-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: var(--d, 0ms);
+}
+.anim-scale {
+  animation: reveal-scale 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: var(--d, 0ms);
+}
+/* Hero-bakgrunnsmynd: sest hægt úr smá aðdrætti */
+.anim-kenburns {
+  animation: kenburns 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.07);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Reveal við scroll – sjá src/components/reveal.tsx.
+   `backwards` fill: falið þar til byrjað er, engir yfirskrifaðir stílar eftir á
+   (hover-transform á kortum virkar áfram). Aðeins þar sem JS er í gangi. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    animation: reveal-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards paused;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal="scale"] {
+    animation-name: reveal-scale;
+  }
+  [data-reveal="left"] {
+    animation-name: reveal-left;
+  }
+  [data-reveal="right"] {
+    animation-name: reveal-right;
+  }
+  [data-reveal="fade"] {
+    animation-name: reveal-fade;
+    animation-duration: 1.2s;
+  }
+  [data-reveal].is-in {
+    animation-play-state: running;
+  }
+
+  [data-reveal-stagger] > * {
+    animation: reveal-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards paused;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  [data-reveal-stagger="scale"] > * {
+    animation-name: reveal-scale;
+  }
+  [data-reveal-stagger].is-in > * {
+    animation-play-state: running;
+  }
+}
+
 /* Fókus */
 :focus-visible {
   outline: 2px solid var(--color-volt-500);
@@ -175,5 +372,11 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  [data-reveal],
+  [data-reveal-stagger] > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

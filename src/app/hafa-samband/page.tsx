@@ -23,7 +23,7 @@ export default function ContactPage() {
       <Section tone="light">
         <Container>
           <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
-            <div className="rounded-3xl border border-mist-200 bg-white p-7 shadow-card sm:p-9">
+            <div data-reveal className="rounded-3xl border border-mist-200 bg-white p-7 shadow-card sm:p-9">
               <ContactForm
                 variant="full"
                 title="Fá tilboð eða ráðgjöf"
@@ -32,8 +32,9 @@ export default function ContactPage() {
               />
             </div>
 
-            <div className="space-y-6">
-              <div className="rounded-3xl bg-ink-900 p-7 text-white sm:p-9">
+            <div data-reveal-stagger className="space-y-6">
+              <div className="relative overflow-hidden rounded-3xl bg-ink-900 p-7 text-white sm:p-9">
+                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-500/30 blur-[70px] animate-aurora" />
                 <Eyebrow tone="volt" className="mb-5">
                   Beint samband
                 </Eyebrow>

@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { RevealObserver } from "@/components/reveal";
 import { site } from "@/content/site";
 
 const inter = Inter({
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="is" className={`${inter.variable} ${sora.variable}`}>
       <body className="min-h-dvh flex flex-col">
+        <RevealObserver />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />

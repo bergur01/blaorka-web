@@ -6,6 +6,7 @@ import { formatDate, getAllNews, getNewsBySlug } from "@/lib/content";
 import { Badge, Container, Eyebrow, Heading, Section } from "@/components/ui";
 import { ArrowRight } from "@/components/icons";
 import { NewsCard } from "@/components/news-card";
+import { ReadingProgress } from "@/components/reading-progress";
 
 type Params = { slug: string };
 
@@ -63,9 +64,10 @@ export default async function NewsArticlePage({ params }: { params: Promise<Para
 
   return (
     <>
+      <ReadingProgress />
       <section className="relative overflow-hidden bg-ink-900 pt-32 text-white sm:pt-40">
         <div className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
-        <div className="absolute -top-40 left-1/2 h-[30rem] w-[50rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-[120px]" />
+        <div className="absolute -top-40 left-1/2 h-[30rem] w-[50rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-[120px] animate-aurora-slow" />
         <Container className="relative">
           <Link
             href="/frettir"
@@ -74,17 +76,17 @@ export default async function NewsArticlePage({ params }: { params: Promise<Para
             <ArrowRight className="h-4 w-4 rotate-180" />
             Allar fréttir
           </Link>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="anim-rise mt-8 flex flex-wrap items-center gap-3 [--d:80ms]">
             <Badge tone="volt">{post.category}</Badge>
             <time dateTime={post.date} className="text-sm text-white/55">
               {formatDate(post.date)}
             </time>
           </div>
-          <Heading as="h1" size="lg" className="mt-5 max-w-4xl">
+          <Heading as="h1" size="lg" className="anim-rise mt-5 max-w-4xl [--d:160ms]">
             {post.title}
           </Heading>
           {cover && (
-            <div className="relative mt-12 aspect-[16/9] overflow-hidden rounded-t-3xl bg-ink-800 shadow-glow sm:aspect-[21/9]">
+            <div className="anim-scale relative mt-12 aspect-[16/9] overflow-hidden rounded-t-3xl bg-ink-800 shadow-glow sm:aspect-[21/9] [--d:320ms]">
               <Image
                 src={cover}
                 alt={post.title}

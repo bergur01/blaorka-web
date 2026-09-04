@@ -34,11 +34,11 @@ const columns = [
 export function SiteFooter() {
   return (
     <footer className="relative overflow-hidden bg-ink-950 text-white">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/60 to-transparent" />
-      <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-brand-500/15 blur-[120px]" />
+      <div className="energy-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/60 to-transparent" />
+      <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-brand-500/15 blur-[120px] animate-aurora-slow" />
 
       <div className="container-x relative py-16 sm:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div data-reveal-stagger className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
             <Logo variant="dark" className="h-8 w-auto" />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/60">

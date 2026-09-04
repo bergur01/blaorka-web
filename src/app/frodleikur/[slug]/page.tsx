@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getKnowledgeArticles, getKnowledgeBySlug } from "@/lib/content";
 import { Button, Container, Eyebrow, PageHero, Section } from "@/components/ui";
 import { Icon } from "@/components/icons";
+import { ReadingProgress } from "@/components/reading-progress";
 
 type Params = { slug: string };
 
@@ -34,6 +35,7 @@ export default async function KnowledgeArticlePage({
 
   return (
     <>
+      <ReadingProgress />
       <PageHero eyebrow="Fróðleikur" title={article.title} lead={article.summary} image={article.image}>
         <p className="text-sm text-white/50">{article.readingMinutes} mín lestur</p>
       </PageHero>
@@ -43,7 +45,7 @@ export default async function KnowledgeArticlePage({
           <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <article className="max-w-3xl">
               {article.sections.map((sec, i) => (
-                <section key={sec.heading} className={i > 0 ? "mt-14" : ""}>
+                <section key={sec.heading} data-reveal className={i > 0 ? "mt-14" : ""}>
                   <h2 className="font-display text-2xl font-semibold tracking-tight text-ink-900 sm:text-3xl">
                     {sec.heading}
                   </h2>
@@ -65,7 +67,7 @@ export default async function KnowledgeArticlePage({
                 </section>
               ))}
 
-              <div className="mt-16 rounded-3xl bg-mist-100 p-8">
+              <div data-reveal className="mt-16 rounded-3xl bg-mist-100 p-8">
                 <h3 className="font-display text-xl font-semibold">Viltu ræða þitt kerfi?</h3>
                 <p className="mt-2 text-sm text-ink-900/65">
                   Við hjálpum þér að velja réttan búnað – engin skuldbinding.

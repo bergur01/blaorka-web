@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCalculators } from "@/lib/content";
 import { Badge, Container, PageHero, Section, WipNote } from "@/components/ui";
 import { ArrowRight, Icon } from "@/components/icons";
+import { SolarDay } from "@/components/solar-day";
 
 export const metadata: Metadata = {
   title: "Reiknivélar",
@@ -19,10 +20,11 @@ export default async function CalculatorsPage() {
         title="Verkfæri fyrir sólarorkukerfi"
         lead="Sláðu inn þínar tölur og fáðu áætlun um stærð sella, rafgeyma, áriðils og kapla. Niðurstöðurnar eru leiðbeinandi – við förum yfir þær með þér."
         image="/photos/victron-raforkubunaur-15a3061.webp"
+        aside={<SolarDay className="w-full" />}
       />
       <Section tone="light">
         <Container>
-          <div className="grid gap-5 md:grid-cols-2">
+          <div data-reveal-stagger className="grid gap-5 md:grid-cols-2">
             {calculators.map((c, i) => (
               <Link
                 key={c.slug}
@@ -33,7 +35,7 @@ export default async function CalculatorsPage() {
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-[0_8px_20px_-8px_rgb(18_136_202/0.8)]">
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-[0_8px_20px_-8px_rgb(18_136_202/0.8)] transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <Icon name={c.icon} className="h-6 w-6" />
                     </span>
                     {c.status === "soon" ? (

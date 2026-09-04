@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ExternalArrow } from "./icons";
+import { Parallax } from "./parallax";
 
 // ---------- Uppbygging ----------
 
@@ -133,7 +134,7 @@ export function Button({
   };
   const variants = {
     primary:
-      "bg-brand-500 text-white hover:bg-brand-400 shadow-[0_8px_30px_-10px_rgb(18_136_202/0.8)] hover:shadow-[0_12px_36px_-10px_rgb(32_202_225/0.8)] hover:-translate-y-0.5",
+      "btn-shine bg-brand-500 text-white hover:bg-brand-400 shadow-[0_8px_30px_-10px_rgb(18_136_202/0.8)] hover:shadow-[0_12px_36px_-10px_rgb(32_202_225/0.8)] hover:-translate-y-0.5",
     secondary:
       "bg-white text-ink-900 hover:bg-mist-100 border border-mist-200 hover:-translate-y-0.5",
     ghost: "text-white/85 hover:text-white hover:bg-white/8",
@@ -241,6 +242,7 @@ export function PageHero({
   compact = false,
   image,
   imagePosition = "center",
+  aside,
 }: {
   eyebrow?: string;
   title: React.ReactNode;
@@ -250,6 +252,8 @@ export function PageHero({
   /** Bakgrunnsmynd – birtist dempuð undir texta eins og á forsíðu */
   image?: string;
   imagePosition?: string;
+  /** Myndefni (t.d. SVG-animation) hægra megin við textann á breiðum skjám */
+  aside?: React.ReactNode;
 }) {
   return (
     <section
@@ -258,35 +262,50 @@ export function PageHero({
       }`}
     >
       {image && (
-        <div className="absolute inset-0 -z-10">
+        <Parallax speed={0.3} className="absolute inset-0 -z-10">
           <Image
             src={image}
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-60"
+            className="anim-kenburns object-cover opacity-60"
             style={{ objectPosition: imagePosition }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ink-900/45 via-ink-900/40 to-ink-900" />
           <div className="absolute inset-0 bg-gradient-to-r from-ink-900/75 via-ink-900/25 to-transparent" />
-        </div>
+        </Parallax>
       )}
       <div className="absolute inset-0 bg-grid-dark [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]" />
-      <div className="absolute -top-40 left-1/2 h-[32rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-[120px]" />
+      <div className="absolute -top-40 left-1/2 h-[32rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-[120px] animate-aurora-slow" />
       <div className="absolute top-10 right-[-10rem] h-72 w-72 rounded-full bg-volt-500/20 blur-[90px] animate-float" />
       <Container className="relative">
-        <div className="max-w-3xl">
-          {eyebrow && (
-            <Eyebrow tone="volt" className="mb-5">
-              {eyebrow}
-            </Eyebrow>
+        <div
+          className={
+            aside
+              ? "grid items-center gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:gap-10"
+              : ""
+          }
+        >
+          <div className="max-w-3xl">
+            {eyebrow && (
+              <Eyebrow tone="volt" className="anim-rise mb-5 [--d:80ms]">
+                {eyebrow}
+              </Eyebrow>
+            )}
+            <Heading as="h1" size="xl" className="anim-rise [--d:160ms]">
+              {title}
+            </Heading>
+            {lead && (
+              <Lead className="anim-rise mt-6 max-w-2xl text-white/70 [--d:280ms]">{lead}</Lead>
+            )}
+            {children && <div className="anim-rise mt-8 [--d:400ms]">{children}</div>}
+          </div>
+          {aside && (
+            <div className="anim-scale w-full max-w-lg justify-self-center xl:max-w-none [--d:500ms]">
+              {aside}
+            </div>
           )}
-          <Heading as="h1" size="xl">
-            {title}
-          </Heading>
-          {lead && <Lead className="mt-6 text-white/70 max-w-2xl">{lead}</Lead>}
-          {children && <div className="mt-8">{children}</div>}
         </div>
       </Container>
     </section>

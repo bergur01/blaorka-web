@@ -32,14 +32,14 @@ export default async function ProjectsPage() {
 
       <Section tone="white">
         <Container>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div data-reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <Eyebrow className="mb-4">Fréttir</Eyebrow>
               <Heading size="md">Nánar um einstök verkefni</Heading>
             </div>
             <TextLink href="/frettir">Allar fréttir</TextLink>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal-stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {news.map((p) => (
               <NewsCard key={p.slug} post={p} />
             ))}

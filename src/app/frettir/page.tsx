@@ -38,7 +38,7 @@ export default async function NewsPage() {
             ))}
           </div>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          <div data-reveal-stagger className="mt-10 grid gap-6 lg:grid-cols-3">
             {first && <NewsCard post={first} featured />}
             {rest.map((p) => (
               <NewsCard key={p.slug} post={p} />
