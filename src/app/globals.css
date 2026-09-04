@@ -153,6 +153,33 @@ body {
   color: transparent;
 }
 
+/* Slagorðið: gradient sem líður hægt yfir textann */
+@utility slogan-shine {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-brand-300) 0%,
+    var(--color-volt-400) 30%,
+    #ffffff 50%,
+    var(--color-volt-400) 70%,
+    var(--color-brand-300) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: slogan-shine 9s ease-in-out infinite;
+}
+
+@keyframes slogan-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Fíngert rúðunet á dökkum flötum */
 @utility bg-grid-dark {
   background-image:

@@ -44,8 +44,16 @@ export const AMPACITY: Record<number, number> = {
   240: 460,
 };
 
-/** Staðlaðar öryggisstærðir, A. */
-export const FUSES = [10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 125, 150, 175, 200, 250, 300, 350, 400, 500];
+/**
+ * Öryggi fyrir jafnstraum – MEGA/ANL/NH stærðirnar sem notaðar eru í
+ * rafgeymarásum. Valið er með 10 % borði ofan á samfellda strauminn.
+ */
+export const FUSES_DC = [30, 40, 50, 60, 80, 100, 125, 150, 175, 200, 250, 300, 355, 400, 500];
+/**
+ * Varrofar fyrir riðstraum – IEC-röðin sem notuð er í íslenskum töflum.
+ * Rofinn á að vera af stærð álagsins, ekki hærri.
+ */
+export const BREAKERS_AC = [6, 10, 13, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250];
 
 export type Install = "loft" | "ror" | "heitt";
 
@@ -105,7 +113,7 @@ export interface CableResult {
   lossW: number;
   lossPct: number;
   ampacity: number;
-  /** Ráðlagt öryggi, A */
+  /** Ráðlagt öryggi (DC) eða varrofi (AC), A */
   fuse: number | null;
   /** Hvað réð stærðinni */
   reason: "fall" | "straumur" | "oryggi" | null;
@@ -145,10 +153,12 @@ export function computeCable(input: CableInput): CableResult {
   const sizeByDrop = rows.find((x) => x.okDrop)?.size ?? null;
   const sizeByAmp = rows.find((x) => x.okAmp)?.size ?? null;
 
-  // Öryggið á að hleypa samfellda straumnum í gegn en aldrei fara yfir
-  // straumþol kapalsins – þess vegna er stærðin valin þannig að bæði
-  // spennufallið standist og til sé öryggi sem passar.
-  const fuseFor = (ampacity: number) => FUSES.find((f) => f >= current * 1.1 && f <= ampacity) ?? null;
+  // Vörnin á að hleypa álaginu í gegn en aldrei fara yfir straumþol kapalsins.
+  // Í jafnstraumsrásum er 10 % borð ofan á samfellda strauminn; í riðstraumi
+  // er rofinn valinn af stærð álagsins eins og venja er í töflum.
+  const devices = circuit === "dc" ? FUSES_DC : BREAKERS_AC;
+  const minDevice = circuit === "dc" ? current * 1.1 : current;
+  const fuseFor = (ampacity: number) => devices.find((f) => f >= minDevice && f <= ampacity) ?? null;
   const chosen = rows.find((x) => x.okDrop && x.okAmp && fuseFor(x.ampacity) !== null) ?? null;
   const size = chosen?.size ?? null;
   const fuse = chosen ? fuseFor(chosen.ampacity) : null;

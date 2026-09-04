@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { getSolarProfiles } from "@/app/actions/solar";
 import { defaultLocation, solarLocations } from "@/lib/solar/locations";
@@ -1239,6 +1241,14 @@ function EquipmentList({
             </li>
           ))}
         </ul>
+        <p className="mt-4 text-xs leading-relaxed text-ink-900/50">
+          Stýringin er valin eftir afli. Hvað margar sellur mega vera í röð – og hvort spennan í frosti sprengir
+          innspennumörkin – ræðst í{" "}
+          <Link href="/reiknivelar/mppt" className="font-semibold text-brand-600 hover:text-brand-500">
+            MPPT-reiknivélinni
+          </Link>
+          .
+        </p>
         <button
           type="button"
           onClick={onToggle}

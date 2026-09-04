@@ -58,10 +58,17 @@ export default async function HomePage() {
         <Container className="pt-40 pb-24 sm:pt-48 sm:pb-32 lg:pt-56 lg:pb-40">
           <div className="grid items-center gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:gap-8">
             <div className="max-w-4xl">
-              <div className="anim-rise mb-8 flex flex-wrap items-center gap-3 [--d:80ms]">
-                <Badge tone="volt">Sólarorka · Rafgeymar · Ótengd kerfi</Badge>
-                <span className="text-sm text-white/55">{site.tagline}</span>
-              </div>
+              <p className="anim-rise mb-8 flex items-center gap-3.5 [--d:80ms]">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-volt-500/12 text-volt-300 ring-1 ring-volt-400/40"
+                >
+                  <Icon name="bolt" className="h-4.5 w-4.5" />
+                </span>
+                <span className="slogan-shine font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                  {site.tagline}
+                </span>
+              </p>
               <Heading as="h1" size="xl" className="anim-rise [--d:160ms]">
                 Þín eigin <span className="text-gradient">orka</span> –
                 <br className="hidden sm:block" /> hvar sem er á landinu.

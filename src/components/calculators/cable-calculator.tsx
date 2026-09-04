@@ -353,7 +353,7 @@ export function CableCalculator() {
               />
               <Stat
                 icon="wave"
-                label="Öryggi"
+                label={circuit === "dc" ? "Öryggi" : "Varrofi"}
                 value={result.fuse ? `${fmt.format(result.fuse)} A` : "—"}
                 sub={`kapall þolir ${fmt.format(result.ampacity)} A`}
               />
@@ -456,8 +456,9 @@ export function CableCalculator() {
         </div>
 
         <p className="px-2 text-xs leading-relaxed text-ink-900/45">
-          Reiknað með kopar og hitaleiðréttu eðlisviðnámi. Straumþolstölurnar eru varfærin viðmið fyrir einn leiðara og
-          koma ekki í stað hönnunar löggilts rafverktaka – lagnaaðferð, einangrun, búnt og umhverfishiti breyta þeim.
+          Reiknað með kopar og hitaleiðréttu eðlisviðnámi, og aflstuðli 1 í riðstraumsrásum. Straumþolstölurnar eru
+          varfærin viðmið fyrir einn leiðara og koma ekki í stað hönnunar löggilts rafverktaka – lagnaaðferð, einangrun,
+          búnt og umhverfishiti breyta þeim.
         </p>
       </div>
     </div>
