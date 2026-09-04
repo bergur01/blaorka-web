@@ -119,12 +119,15 @@ export default async function HomePage() {
             <TextLink href="/lausnir">Allar lausnir</TextLink>
           </div>
 
-          <div data-reveal-stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            data-reveal-stagger
+            className="no-scrollbar -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 sm:mx-0 sm:mt-14 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3"
+          >
             {solutions.map((s, i) => (
               <Link
                 key={s.slug}
                 href={`/lausnir/${s.slug}`}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-mist-200 bg-white p-7 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_24px_50px_-20px_rgb(18_136_202/0.35)] ${
+                className={`group relative flex w-[76vw] max-w-[20rem] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-3xl border border-mist-200 bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-[0_24px_50px_-20px_rgb(18_136_202/0.35)] sm:w-auto sm:max-w-none sm:shrink sm:p-7 ${
                   i === 0 ? "sm:col-span-2 lg:col-span-1" : ""
                 }`}
               >
@@ -243,27 +246,35 @@ export default async function HomePage() {
                 <Button href="/reiknivelar">Allar reiknivélar</Button>
               </div>
             </div>
-            <div data-reveal-stagger className="grid gap-4 sm:grid-cols-2">
+            <div data-reveal-stagger className="grid gap-3 sm:grid-cols-2 sm:gap-4">
               {calculators.map((c) => (
                 <Link
                   key={c.slug}
                   href={`/reiknivelar/${c.slug}`}
-                  className="group rounded-3xl border border-mist-200 bg-mist-50 p-6 transition hover:border-brand-300 hover:bg-white hover:shadow-card"
+                  className="group flex items-center gap-4 rounded-2xl border border-mist-200 bg-mist-50 p-4 transition hover:border-brand-300 hover:bg-white hover:shadow-card sm:block sm:rounded-3xl sm:p-6"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex shrink-0 items-center justify-between sm:w-full">
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white text-brand-500 ring-1 ring-mist-200 transition duration-300 group-hover:-rotate-6 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white">
                       <Icon name={c.icon} className="h-5 w-5" />
                     </span>
                     {c.status === "soon" && (
-                      <Badge tone="neutral">Væntanlegt</Badge>
+                      <span className="hidden sm:inline-flex">
+                        <Badge tone="neutral">Væntanlegt</Badge>
+                      </span>
                     )}
                   </div>
-                  <h3 className="mt-5 font-display text-lg font-semibold tracking-tight">
-                    {c.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-900/60">
-                    {c.description}
-                  </p>
+                  <div className="min-w-0 flex-1 sm:mt-5">
+                    <h3 className="font-display text-base font-semibold tracking-tight sm:text-lg">
+                      {c.title}
+                    </h3>
+                    {c.status === "soon" && (
+                      <p className="mt-0.5 text-xs text-ink-900/45 sm:hidden">Væntanlegt</p>
+                    )}
+                    <p className="mt-2 hidden text-sm leading-relaxed text-ink-900/60 sm:block">
+                      {c.description}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-brand-500 transition-transform group-hover:translate-x-1 sm:hidden" />
                 </Link>
               ))}
             </div>
