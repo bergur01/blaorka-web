@@ -80,13 +80,11 @@ export default async function HomePage() {
           </div>
 
           {/* Tölur */}
-          <dl className="mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:mt-28 lg:grid-cols-4">
+          <dl className="mt-14 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/10 pt-7 sm:mt-20 lg:justify-between">
             {stats.map((s) => (
-              <div key={s.label} className="bg-ink-900/80 px-6 py-6 backdrop-blur sm:px-8 sm:py-8">
-                <dt className="text-xs font-medium uppercase tracking-wider text-white/50">
-                  {s.label}
-                </dt>
-                <dd className="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+              <div key={s.label} className="flex items-baseline gap-2">
+                <dt className="order-last text-sm text-white/55">{s.label}</dt>
+                <dd className="font-display text-2xl font-semibold tracking-tight text-white sm:text-[1.75rem]">
                   {s.value}
                 </dd>
               </div>

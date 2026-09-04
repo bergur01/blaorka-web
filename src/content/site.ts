@@ -43,8 +43,8 @@ export const team: TeamMember[] = [
 ];
 
 export const stats = [
-  { value: "2016", label: "Starfandi síðan" },
-  { value: "> 10 MWh", label: "Seld rafgeymarýmd" },
-  { value: "> 2 MW", label: "Selt afl í sólarsellum" },
-  { value: "Ekki hugmynd! Hellingur!", label: "Uppsett kerfi" },
+  { value: "2016", label: "starfandi síðan" },
+  { value: "10+ MWh", label: "seld rafgeymarýmd" },
+  { value: "2+ MW", label: "selt afl í sólarsellum" },
+  { value: "Hundruð", label: "uppsettra kerfa" },
 ];
