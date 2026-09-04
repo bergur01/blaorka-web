@@ -1,0 +1,24 @@
+[Unit]
+Description=new.blaorka.is – Next.js (standalone)
+After=network.target
+
+[Service]
+Type=simple
+User=blaorka-new
+Group=blaorka-new
+WorkingDirectory=/home/blaorka-new/app/current
+EnvironmentFile=/home/blaorka-new/app/shared/.env
+Environment=NODE_ENV=production
+Environment=PORT=3010
+Environment=HOSTNAME=127.0.0.1
+Environment=NEXT_TELEMETRY_DISABLED=1
+ExecStart=/home/blaorka-new/app/start.sh
+Restart=always
+RestartSec=3
+# Herða aðeins
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
