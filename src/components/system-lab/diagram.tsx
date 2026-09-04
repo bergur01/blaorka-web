@@ -25,6 +25,8 @@ export interface LiveState {
   deficit: number;
   windSpeed: number;
   temp: number;
+  /** Rafbíllinn hefur fengið alla þá orku sem hann fær í dag */
+  evDone: boolean;
 }
 
 export type NodeId =
@@ -78,6 +80,42 @@ const EDGES = {
 } as const;
 
 type EdgeId = keyof typeof EDGES;
+
+/** Lengd kapals í hnitum myndarinnar – allir eru beinir lárétt/lóðrétt. */
+function pathLength(d: string): number {
+  let x = 0;
+  let y = 0;
+  let len = 0;
+  for (const part of d.match(/[MHVL][^MHVL]*/g) ?? []) {
+    const n = part.slice(1).trim().split(/[\s,]+/).map(Number);
+    if (part[0] === "M") {
+      [x, y] = n;
+    } else if (part[0] === "H") {
+      len += Math.abs(n[0] - x);
+      x = n[0];
+    } else if (part[0] === "V") {
+      len += Math.abs(n[0] - y);
+      y = n[0];
+    } else {
+      len += Math.hypot(n[0] - x, n[1] - y);
+      [x, y] = n;
+    }
+  }
+  return len;
+}
+
+const EDGE_LENGTH = Object.fromEntries(
+  (Object.keys(EDGES) as EdgeId[]).map((k) => [k, pathLength(EDGES[k])]),
+) as Record<EdgeId, number>;
+
+/**
+ * Orkupunktarnir rúlla alltaf á sama hraða, hvað sem aflinu líður – hraði sem
+ * eltir aflið kippist til í hvert sinn sem talan breytist. Lengd kapalsins
+ * ræður því bæði hversu lengi punktur er á leiðinni og hversu margir þeir eru,
+ * svo bilið milli þeirra sé alls staðar eins.
+ */
+const DOT_SPEED = 34; // hnitaeiningar á sekúndu
+const DOT_GAP = 46;
 
 // ---------- Smáhlutir ----------
 
@@ -265,7 +303,9 @@ function Flow({
   color?: string;
 }) {
   const on = power > 0.015;
-  const dur = clamp(3.2 / (0.35 + power * 0.7), 0.6, 6);
+  const len = EDGE_LENGTH[id];
+  const dur = len / DOT_SPEED;
+  const count = len < 24 ? 0 : clamp(Math.round(len / DOT_GAP), 1, 4);
   return (
     <g>
       <path
@@ -286,14 +326,14 @@ function Flow({
         strokeLinejoin="round"
         fill="none"
       />
-      {on && (
+      {on && count > 0 && (
         <g fill={color} className={reverse ? "sl-rev" : undefined}>
-          {[0, 1, 2].map((i) => (
+          {Array.from({ length: count }, (_, i) => (
             <circle
               key={i}
               r="3.6"
               className={`sl-dot sl-dot-${id}`}
-              style={{ animationDuration: `${dur}s`, animationDelay: `${-(dur * i) / 3}s` }}
+              style={{ animationDuration: `${dur}s`, animationDelay: `${-(dur * i) / count}s` }}
             />
           ))}
         </g>

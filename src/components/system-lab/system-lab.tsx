@@ -80,6 +80,10 @@ function liveAt(hours: LabHour[], t: number): LiveState {
   // Hleðslustaðan í hverri færslu er staðan í LOK klukkustundarinnar, svo
   // staðan á tíma t liggur milli loka fyrri klukkustundar og þessarar.
   const socFrom = hours[(i + 23) % 24].soc;
+  // Bíllinn telst fullhlaðinn þegar hann er búinn að fá dagsskammtinn sinn
+  let evSoFar = 0;
+  for (let k = 0; k <= i; k++) evSoFar += hours[k].ev;
+  const evTotal = hours.reduce((acc, h) => acc + h.ev, 0);
   return {
     hour: t,
     solar: lerp(a.solar, b.solar, f),
@@ -94,6 +98,7 @@ function liveAt(hours: LabHour[], t: number): LiveState {
     deficit: lerp(a.deficit, b.deficit, f),
     windSpeed: lerp(a.windSpeed, b.windSpeed, f),
     temp: lerp(a.temp, b.temp, f),
+    evDone: evTotal > 0.05 && evSoFar >= evTotal - 0.05,
   };
 }
 
