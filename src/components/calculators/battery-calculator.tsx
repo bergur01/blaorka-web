@@ -41,6 +41,7 @@ export function BatteryCalculator() {
   const model = BATTERIES.find((b) => b.id === modelId);
   const volts = custom ? customVolts : (model?.volts ?? 51.2);
   const ah = custom ? customAh : (model?.ah ?? 200);
+  const unitMaxA = custom ? undefined : model?.maxDischargeA;
   const chem = CHEMISTRY[chemistry];
   // Kerfisspennan fylgir rafgeyminum sem er valinn
   const systemVoltage = systemVoltageFor(volts);
@@ -56,8 +57,8 @@ export function BatteryCalculator() {
 
   const shownCount = mode === "duration" ? count : need.units;
   const shownBank = useMemo(
-    () => computeBank({ count: shownCount, volts, ah, chemistry, systemVoltage, dod, loadW, cold }),
-    [shownCount, volts, ah, chemistry, systemVoltage, dod, loadW, cold],
+    () => computeBank({ count: shownCount, volts, ah, chemistry, systemVoltage, dod, loadW, cold, unitMaxA }),
+    [shownCount, volts, ah, chemistry, systemVoltage, dod, loadW, cold, unitMaxA],
   );
 
   const years = lifetimeYears(chemistry, 1);
@@ -140,8 +141,11 @@ export function BatteryCalculator() {
                   <span className="block text-sm font-semibold">{b.name}</span>
                   <span className="block text-xs text-ink-900/55">{b.note}</span>
                 </span>
-                <span className="shrink-0 font-display text-sm font-semibold tabular-nums text-brand-600">
-                  {fmt1.format(unitKwh(b))} kWst
+                <span className="shrink-0 text-right">
+                  <span className="block font-display text-sm font-semibold tabular-nums text-brand-600">
+                    {fmt1.format(unitKwh(b))} kWst
+                  </span>
+                  <span className="block text-xs tabular-nums text-ink-900/45">{fmt.format(b.maxDischargeA)} A</span>
                 </span>
               </button>
             ))}
@@ -403,6 +407,10 @@ export function BatteryCalculator() {
             <Row label="Tenging" value={shownCount > 1 ? `${shownCount} einingar samsíða` : "Ein eining"} />
             <Row label="Kerfisspenna" value={`${fmt1.format(volts)} V · ${systemVoltage} V kerfi`} />
             <Row label="Rýmd bankans" value={`${fmt.format(ah * shownCount)} Ah á ${fmt1.format(volts)} V`} />
+            <Row
+              label="Hámarksstraumur"
+              value={`${fmt.format(shownBank.maxDischargeA)} A${shownCount > 1 ? ` (${fmt.format(shownBank.maxDischargeA / shownCount)} A × ${shownCount})` : ""}`}
+            />
             <Row label="Ráðlagður hleðslustraumur" value={`${fmt.format(shownBank.chargeA)} A`} />
             <Row
               label="Full hleðsla úr tómum banka"

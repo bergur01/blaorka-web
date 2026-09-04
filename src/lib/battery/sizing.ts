@@ -65,6 +65,8 @@ export interface BatteryModel {
   /** Rýmd, Ah */
   ah: number;
   chemistry: Chemistry;
+  /** Hámarks samfelldur afhleðslustraumur einingarinnar, A (uppgefið af BMS) */
+  maxDischargeA: number;
   note: string;
 }
 
@@ -79,6 +81,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 51.2,
     ah: 200,
     chemistry: "lifepo4",
+    maxDischargeA: 100,
     note: "Bankinn í flestum húsa- og fjarskiptakerfum",
   },
   {
@@ -87,6 +90,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 51.2,
     ah: 100,
     chemistry: "lifepo4",
+    maxDischargeA: 50,
     note: "Minni 48 V kerfi, auðvelt að stækka síðar",
   },
   {
@@ -95,6 +99,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 25.6,
     ah: 230,
     chemistry: "lifepo4",
+    maxDischargeA: 200,
     note: "Bátar og millistærð á 24 V",
   },
   {
@@ -103,6 +108,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 12.8,
     ah: 460,
     chemistry: "lifepo4",
+    maxDischargeA: 200,
     note: "Stærsti 12 V geymirinn – húsbílar og hjólhýsi",
   },
   {
@@ -111,6 +117,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 12.8,
     ah: 230,
     chemistry: "lifepo4",
+    maxDischargeA: 200,
     note: "Algengasta stærðin í ferðakerfum",
   },
   {
@@ -119,6 +126,7 @@ export const BATTERIES: BatteryModel[] = [
     volts: 12.8,
     ah: 100,
     chemistry: "lifepo4",
+    maxDischargeA: 100,
     note: "Minnsta einingin – léttur ferðageymir",
   },
 ];
@@ -162,6 +170,11 @@ export interface BankInput {
   loadW: number;
   /** Er rafgeymirinn í ókyntu rými? Kuldi minnkar nýtanlega rýmd. */
   cold: boolean;
+  /**
+   * Hámarksstraumur einingarinnar skv. BMS, A. Sé hann ekki gefinn (eigin
+   * rafgeymir) er stuðst við varfærið C-hlutfall efnafræðinnar.
+   */
+  unitMaxA?: number;
 }
 
 export interface BankResult {
@@ -205,7 +218,7 @@ export function computeBank(input: BankInput): BankResult {
 
   const w = wiring(input.volts, input.systemVoltage, input.count);
   const parallel = Math.max(1, w.parallel);
-  const maxDischargeA = input.ah * chem.maxDischargeC * parallel;
+  const maxDischargeA = (input.unitMaxA ?? input.ah * chem.maxDischargeC) * parallel;
   const maxLoadW = maxDischargeA * bankVolts * INVERTER_EFF;
   const chargeA = input.ah * chem.chargeC * parallel;
   const rechargeHours = chargeA > 0 ? (usableKwh * 1000) / (chargeA * bankVolts) : 0;
