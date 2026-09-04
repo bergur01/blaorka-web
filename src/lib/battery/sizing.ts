@@ -131,6 +131,13 @@ export function unitKwh(b: { volts: number; ah: number }): number {
   return (b.volts * b.ah) / 1000;
 }
 
+/** Kerfisspennan sem eining af gefinni nafnspennu tilheyrir. */
+export function systemVoltageFor(unitVolts: number): SystemVoltage {
+  if (unitVolts >= 40) return 48;
+  if (unitVolts >= 20) return 24;
+  return 12;
+}
+
 /**
  * Hvernig einingar raðast í kerfi: hversu margar í röð til að ná
  * kerfisspennunni og hversu margar slíkar raðir eru samsíða.

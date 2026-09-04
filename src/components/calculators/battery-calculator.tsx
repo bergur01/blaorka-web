@@ -5,16 +5,14 @@ import { useMemo, useState } from "react";
 import {
   BATTERIES,
   CHEMISTRY,
-  SYSTEM_VOLTAGES,
   computeBank,
   computeNeed,
   fmt,
   fmt1,
   lifetimeYears,
+  systemVoltageFor,
   unitKwh,
-  wiring,
   type Chemistry,
-  type SystemVoltage,
 } from "@/lib/battery/sizing";
 import { ArrowRight, Icon } from "@/components/icons";
 
@@ -32,7 +30,6 @@ export function BatteryCalculator() {
   const [customVolts, setCustomVolts] = useState(51.2);
   const [customAh, setCustomAh] = useState(200);
   const [chemistry, setChemistry] = useState<Chemistry>("lifepo4");
-  const [systemVoltage, setSystemVoltage] = useState<SystemVoltage>(48);
   const [count, setCount] = useState(2);
   const [dodPct, setDodPct] = useState(80);
   const [loadW, setLoadW] = useState(600);
@@ -45,6 +42,8 @@ export function BatteryCalculator() {
   const volts = custom ? customVolts : (model?.volts ?? 51.2);
   const ah = custom ? customAh : (model?.ah ?? 200);
   const chem = CHEMISTRY[chemistry];
+  // Kerfisspennan fylgir rafgeyminum sem er valinn
+  const systemVoltage = systemVoltageFor(volts);
 
   // Efnafræðin ræður hámarksdýpt; sleðinn eltir hana þegar skipt er
   const maxDod = Math.round(chem.dod * 100);
@@ -55,7 +54,6 @@ export function BatteryCalculator() {
     [dailyKwh, days, dod, chemistry, cold, volts, ah, systemVoltage],
   );
 
-  const series = wiring(volts, systemVoltage, 99).series;
   const shownCount = mode === "duration" ? count : need.units;
   const shownBank = useMemo(
     () => computeBank({ count: shownCount, volts, ah, chemistry, systemVoltage, dod, loadW, cold }),
@@ -119,7 +117,7 @@ export function BatteryCalculator() {
             </span>
             <div>
               <h2 className="font-display text-lg font-semibold leading-tight">Rafgeymirinn</h2>
-              <p className="mt-0.5 text-sm text-ink-900/55">Veldu einingu og kerfisspennu.</p>
+              <p className="mt-0.5 text-sm text-ink-900/55">Veldu einingu og fjölda – spennan fylgir geyminum.</p>
             </div>
           </div>
 
@@ -198,51 +196,27 @@ export function BatteryCalculator() {
             </div>
           )}
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div>
-              <span className="text-sm font-medium text-ink-900">Kerfisspenna</span>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {SYSTEM_VOLTAGES.map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setSystemVoltage(v)}
-                    className={`rounded-xl border px-2 py-2 text-sm font-semibold transition ${
-                      systemVoltage === v
-                        ? "border-brand-500 bg-brand-50 text-brand-700 ring-1 ring-brand-500"
-                        : "border-mist-300 text-ink-900/70 hover:border-brand-300"
-                    }`}
-                  >
-                    {v} V
-                  </button>
-                ))}
+          {mode === "duration" && (
+            <label className="mt-5 block">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-medium text-ink-900">Fjöldi eininga</span>
+                <span className="font-display text-lg font-semibold text-brand-600">{count}</span>
               </div>
-              <p className="mt-1.5 text-xs text-ink-900/50">
-                {series > 1 ? `${series} einingar í röð gefa ${systemVoltage} V` : "Einingin er á kerfisspennunni"}
-              </p>
-            </div>
-
-            {mode === "duration" && (
-              <label className="block">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-medium text-ink-900">Fjöldi eininga</span>
-                  <span className="font-display text-lg font-semibold text-brand-600">{count}</span>
-                </div>
-                <input
-                  type="range"
-                  min={series}
-                  max={series * 8}
-                  step={series}
-                  value={count}
-                  onChange={(e) => setCount(Number(e.target.value))}
-                  className="mt-3 w-full accent-brand-500"
-                />
-                <span className="mt-1 block text-xs text-ink-900/50">
-                  {fmt1.format(unitKwh({ volts, ah }) * count)} kWst nafnrýmd
-                </span>
-              </label>
-            )}
-          </div>
+              <input
+                type="range"
+                min={1}
+                max={8}
+                step={1}
+                value={count}
+                onChange={(e) => setCount(Number(e.target.value))}
+                className="mt-3 w-full accent-brand-500"
+              />
+              <span className="mt-1 block text-xs text-ink-900/50">
+                {count > 1 ? `${count} samsíða · ` : ""}
+                {fmt1.format(unitKwh({ volts, ah }) * count)} kWst nafnrýmd á {systemVoltage} V kerfi
+              </span>
+            </label>
+          )}
         </section>
 
         <section className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-7">
@@ -426,19 +400,9 @@ export function BatteryCalculator() {
         <div className="rounded-3xl border border-mist-200 bg-white p-6 shadow-card sm:p-7">
           <h3 className="font-display text-lg font-semibold">Uppsetning</h3>
           <dl className="mt-4 divide-y divide-mist-200 text-sm">
-            <Row
-              label="Tenging"
-              value={
-                shownBank.wiring.series > 1
-                  ? `${shownBank.wiring.series} í röð × ${Math.max(1, shownBank.wiring.parallel)} samsíða`
-                  : `${Math.max(1, shownBank.wiring.parallel)} samsíða`
-              }
-            />
-            <Row label="Bankaspenna" value={`${fmt1.format(volts * shownBank.wiring.series)} V`} />
-            <Row
-              label="Rýmd á kerfisspennu"
-              value={`${fmt.format(ah * Math.max(1, shownBank.wiring.parallel))} Ah`}
-            />
+            <Row label="Tenging" value={shownCount > 1 ? `${shownCount} einingar samsíða` : "Ein eining"} />
+            <Row label="Kerfisspenna" value={`${fmt1.format(volts)} V · ${systemVoltage} V kerfi`} />
+            <Row label="Rýmd bankans" value={`${fmt.format(ah * shownCount)} Ah á ${fmt1.format(volts)} V`} />
             <Row label="Ráðlagður hleðslustraumur" value={`${fmt.format(shownBank.chargeA)} A`} />
             <Row
               label="Full hleðsla úr tómum banka"
@@ -461,7 +425,7 @@ export function BatteryCalculator() {
             <ul className="mt-4 space-y-2.5">
               {loads.map((w) => {
                 const h = (shownBank.acKwh * 1000) / w;
-                const over = w / 0.94 / (volts * shownBank.wiring.series) > shownBank.maxDischargeA;
+                const over = w / 0.94 / volts > shownBank.maxDischargeA;
                 return (
                   <li key={w} className="grid grid-cols-[4.5rem_1fr_6rem] items-center gap-3 text-sm">
                     <span className="tabular-nums font-medium">{fmt.format(w)} W</span>
@@ -506,7 +470,7 @@ export function BatteryCalculator() {
                 <span className="font-display font-semibold text-brand-500">3</span>
                 <span>
                   Það gera <strong className="text-ink-900">{need.units} einingar</strong> ={" "}
-                  {fmt1.format(need.actualKwh)} kWst, því {series > 1 ? `hver röð er ${series} einingar` : "hver eining stendur ein"}.
+                  {fmt1.format(need.actualKwh)} kWst nafnrýmd.
                 </span>
               </li>
             </ol>
