@@ -3,6 +3,7 @@ import Image from "next/image";
 import { site, stats, team } from "@/content/site";
 import { Button, Container, Eyebrow, Heading, Lead, PageHero, Section } from "@/components/ui";
 import { LogoMark } from "@/components/logo";
+import { PulseLine } from "@/components/pulse-line";
 
 export const metadata: Metadata = {
   title: "Um okkur",
@@ -19,6 +20,7 @@ export default function AboutPage() {
         lead="Bláorka er íslenskt fyrirtæki sem hannar, smíðar og þjónustar sjálfstæð raforkukerfi. Við trúum því að hver sem er geti átt sína eigin orku – hvar sem er á landinu."
         image="/photos/stasetning-komdu-vi-dji_0123.webp"
         imagePosition="center 62%"
+        aside={<PulseLine className="w-full" />}
       />
 
       <Section tone="white">

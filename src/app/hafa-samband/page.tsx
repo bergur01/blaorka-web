@@ -4,6 +4,7 @@ import { site } from "@/content/site";
 import { Container, Eyebrow, PageHero, Section } from "@/components/ui";
 import { ContactForm } from "@/components/contact-form";
 import { ExternalArrow } from "@/components/icons";
+import { ChatBubbles } from "@/components/chat-bubbles";
 
 export const metadata: Metadata = {
   title: "Hafa samband",
@@ -19,6 +20,7 @@ export default function ContactPage() {
         lead="Sendu okkur línu, hringdu eða kíktu við í Fosshálsi. Við svörum yfirleitt samdægurs á virkum dögum."
         compact
         image="/photos/komdu-vi-hja-blaorku-15a3273.webp"
+        aside={<ChatBubbles className="w-full" />}
       />
       <Section tone="light">
         <Container>

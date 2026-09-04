@@ -3,6 +3,7 @@ import { getGallery, getLatestNews } from "@/lib/content";
 import { Button, Container, Eyebrow, Heading, PageHero, Section, TextLink } from "@/components/ui";
 import { Gallery } from "@/components/gallery";
 import { NewsCard } from "@/components/news-card";
+import { PhotoFan } from "@/components/photo-fan";
 
 export const metadata: Metadata = {
   title: "Verkefni í myndum",
@@ -20,6 +21,7 @@ export default async function ProjectsPage() {
         lead="Frá sumarhúsum og heimilum upp á fjöll og út í eyjar. Hér eru myndir úr kerfum sem við höfum hannað, smíðað og sett upp."
         compact
         image="/gallery/37.webp"
+        aside={<PhotoFan />}
       >
         <Button href="/hafa-samband">Ræða þitt verkefni</Button>
       </PageHero>

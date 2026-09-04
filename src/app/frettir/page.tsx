@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAllNews, getNewsCategories } from "@/lib/content";
 import { Container, PageHero, Section } from "@/components/ui";
 import { NewsCard } from "@/components/news-card";
+import { BroadcastMast } from "@/components/broadcast-mast";
 
 export const metadata: Metadata = {
   title: "Fréttir",
@@ -20,6 +21,7 @@ export default async function NewsPage() {
         lead="Uppsetningar, ný tæki og tilkynningar – beint úr versluninni og af vettvangi."
         compact
         image="/gallery/36.webp"
+        aside={<BroadcastMast className="w-full" />}
       />
       <Section tone="light">
         <Container>
