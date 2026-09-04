@@ -3,6 +3,10 @@
 /**
  * Skýringarmynd af ótengdu orkukerfi.
  *
+ * Ekkert hér er mýkt með CSS-transition: gildin breytast í hverjum ramma og þá
+ * endurræsist mýkingin sífellt á miðri leið, svo hún dregst aftur úr og
+ * stökkvir svo á eftir. Tölurnar eru þegar millireiknaðar og hreyfast mjúkt.
+ *
  * Uppsetningin er einfalt flæði frá vinstri til hægri í þremur hlutum:
  * FRAMLEIÐSLA (sól og vindur) → GEYMSLA OG BREYTING (DC-teinn, rafgeymir,
  * MultiPlus, Cerbo) → NOTKUN (hús og rafbíll). Kaplarnir eru hornréttir svo
@@ -396,12 +400,10 @@ export function SystemDiagram({
         .sl-blades { transform-box: view-box; transform-origin: 115px 300px; animation: sl-spin 9s linear infinite; }
         @keyframes sl-spin { to { transform: rotate(360deg); } }
         .sl-rays { transform-box: view-box; transform-origin: 110px 102px; animation: sl-spin 50s linear infinite; }
-        .sl-fill { transition: width .5s ease; }
         .sl-pulse { animation: sl-pulse 1.8s ease-in-out infinite; }
         @keyframes sl-pulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
         .sl-comm { stroke-dasharray: 2 6; animation: sl-comm 3s linear infinite; }
         @keyframes sl-comm { to { stroke-dashoffset: -32; } }
-        .sl-sky { transition: opacity .6s ease; }
         @media (prefers-reduced-motion: reduce) { .sl-svg * { animation: none !important; } }
       `}</style>
 
@@ -440,7 +442,7 @@ export function SystemDiagram({
 
       {/* Bakgrunnur: dagsbirtan liggur ofan á nóttinni */}
       <rect width="1080" height="500" fill="#050f1c" />
-      <rect className="sl-sky" width="1080" height="500" fill="url(#sl-day)" opacity={r2(1 - darkness)} />
+      <rect width="1080" height="500" fill="url(#sl-day)" opacity={r2(1 - darkness)} />
       <g fill="#ffffff" opacity={r2(darkness * 0.45)}>
         {[[300, 70], [352, 104], [420, 62], [800, 88], [880, 62], [640, 74]].map(([sx, sy], i) => (
           <circle key={i} cx={sx} cy={sy} r={i % 2 ? 1.3 : 1.8} />
@@ -628,7 +630,7 @@ export function SystemDiagram({
         onSelect={onSelect}
       >
         <rect x={500} y={352} width={160} height={30} rx="8" fill="#04101d" stroke="#ffffff" strokeOpacity=".22" />
-        <rect className="sl-fill" x={502} y={354} width={r2(socFill * 156)} height={26} rx="6" fill="url(#sl-batt)" />
+        <rect x={502} y={354} width={r2(socFill * 156)} height={26} rx="6" fill="url(#sl-batt)" />
         <text x={580} y={373} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" style={{ fontVariantNumeric: "tabular-nums" }}>
           {`${Math.round(live.soc)} %`}
         </text>
