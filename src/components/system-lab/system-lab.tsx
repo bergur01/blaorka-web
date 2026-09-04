@@ -2,20 +2,18 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CLIMATE_SITES, MONTHS, TILTS, type TiltDeg } from "@/content/climate";
+import { MONTHS } from "@/content/climate";
 import { makeFormatter } from "@/lib/format";
 import {
-  INVERTERS,
-  LOAD_PROFILE_LABELS,
   inverterFor,
+  peakLoadKw,
   simulateDay,
   simulateYear,
   siteBySlug,
+  suggestInverter,
   type EvMode,
-  type InverterVa,
   type LabHour,
   type LabInput,
-  type LoadProfile,
 } from "@/lib/system-lab";
 import { SystemDiagram, type LiveState, type NodeId } from "./diagram";
 import { DayChart, YearChart } from "./charts";
@@ -24,59 +22,50 @@ import { NODE_INFO } from "./info";
 const nf0 = makeFormatter(0);
 const nf1 = makeFormatter(1);
 
-const DEFAULT: LabInput = {
+/** Fast gildi sem notandinn þarf ekki að stilla – haldið utan við viðmótið. */
+const FIXED = {
   siteSlug: "reykjavik",
+  tilt: 35 as const,
+  turbines: 1,
+  hubHeight: 12,
+  reservePct: 20,
+  profile: "heimili" as const,
+  evKw: 7.4,
+  evKwhPerDay: 10,
+  grid: false,
+  turbineKw: 1.5,
+};
+
+const DEFAULT: LabInput = {
+  ...FIXED,
   month: 5,
-  tilt: 35,
   kwp: 6,
   sun: 1,
   windMean: 6,
-  turbineKw: 0.8,
-  turbines: 1,
-  hubHeight: 12,
+  turbineKw: FIXED.turbineKw,
   batteryKwh: 20,
-  reservePct: 20,
   inverterVa: 5000,
   dailyKwh: 12,
-  profile: "heimili",
   evEnabled: false,
-  evKw: 3.7,
-  evKwhPerDay: 8,
   evMode: "nott",
   generator: true,
-  grid: false,
 };
 
-const PRESETS: { id: string; label: string; note: string; input: Partial<LabInput> }[] = [
+const PRESETS: { id: string; label: string; input: Partial<LabInput> }[] = [
   {
     id: "bustadur",
     label: "Sumarbústaður",
-    note: "3 kWp · 10 kWst · notað á kvöldin",
-    input: { kwp: 3, batteryKwh: 10, inverterVa: 3000, dailyKwh: 6, profile: "bustadur", turbineKw: 0, evEnabled: false, generator: false, grid: false, month: 5, tilt: 35 },
+    input: { month: 5, kwp: 3, batteryKwh: 10, dailyKwh: 6, turbineKw: 0, evEnabled: false, generator: false },
   },
   {
     id: "heimili",
     label: "Heimili utan nets",
-    note: "8 kWp · 30 kWst · varmadæla",
-    input: { kwp: 8, batteryKwh: 30, inverterVa: 8000, dailyKwh: 28, profile: "heimili", turbineKw: 1.5, turbines: 1, evEnabled: false, generator: true, grid: false, month: 9 },
+    input: { month: 9, kwp: 8, batteryKwh: 30, dailyKwh: 28, turbineKw: 1.5, evEnabled: false, generator: true },
   },
   {
     id: "rafbill",
-    label: "Sól í rafbílinn",
-    note: "10 kWp · hleðsla þegar sólin skín",
-    input: { kwp: 10, batteryKwh: 20, inverterVa: 5000, dailyKwh: 12, profile: "heimili", evEnabled: true, evMode: "sol", evKw: 7.4, evKwhPerDay: 12, turbineKw: 0, generator: false, grid: true, month: 5 },
-  },
-  {
-    id: "slorfell",
-    label: "Fjarskiptastöð",
-    note: "11 kWp · 60 kWst · 800 W mylla",
-    input: { siteSlug: "egilsstadir", kwp: 11, batteryKwh: 60, inverterVa: 8000, dailyKwh: 30, profile: "jafnt", turbineKw: 0.8, turbines: 1, hubHeight: 18, windMean: 9, evEnabled: false, generator: true, grid: false, month: 0, tilt: 60 },
-  },
-  {
-    id: "husbill",
-    label: "Húsbíll",
-    note: "0,9 kWp · 5 kWst · ferðalag",
-    input: { kwp: 0.9, batteryKwh: 5, inverterVa: 3000, dailyKwh: 3, profile: "bustadur", turbineKw: 0, evEnabled: false, generator: false, grid: false, month: 6, tilt: 15 },
+    label: "Rafbíll á sólinni",
+    input: { month: 5, kwp: 10, batteryKwh: 20, dailyKwh: 12, turbineKw: 0, evEnabled: true, evMode: "sol", generator: true },
   },
 ];
 
@@ -105,7 +94,7 @@ function liveAt(hours: LabHour[], t: number): LiveState {
   };
 }
 
-// ---------- Litlir stýrihlutir ----------
+// ---------- Stýrihlutir ----------
 
 function Slider({
   label,
@@ -115,7 +104,6 @@ function Slider({
   max,
   step,
   onChange,
-  hint,
 }: {
   label: string;
   value: number;
@@ -124,13 +112,12 @@ function Slider({
   max: number;
   step: number;
   onChange: (v: number) => void;
-  hint?: string;
 }) {
   return (
     <label className="block">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm font-medium text-white/85">{label}</span>
-        <span className="font-display text-base font-semibold text-volt-300 tabular-nums">{display}</span>
+        <span className="font-display text-base font-semibold tabular-nums text-volt-300">{display}</span>
       </div>
       <input
         type="range"
@@ -141,62 +128,11 @@ function Slider({
         onChange={(e) => onChange(Number(e.target.value))}
         className="mt-2 w-full accent-volt-400"
       />
-      {hint && <span className="mt-1 block text-[11px] leading-snug text-white/45">{hint}</span>}
     </label>
   );
 }
 
-function Choice<T extends string | number>({
-  label,
-  value,
-  options,
-  onChange,
-  columns = 3,
-}: {
-  label: string;
-  value: T;
-  options: { value: T; label: string; note?: string }[];
-  onChange: (v: T) => void;
-  columns?: number;
-}) {
-  return (
-    <div>
-      <span className="text-sm font-medium text-white/85">{label}</span>
-      <div className={`mt-2 grid gap-1.5`} style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
-        {options.map((o) => {
-          const on = o.value === value;
-          return (
-            <button
-              key={String(o.value)}
-              type="button"
-              onClick={() => onChange(o.value)}
-              className={`rounded-xl border px-2 py-2 text-center text-xs font-semibold transition ${
-                on
-                  ? "border-volt-400 bg-volt-500/15 text-white"
-                  : "border-white/12 bg-white/4 text-white/65 hover:border-white/30 hover:text-white"
-              }`}
-            >
-              {o.label}
-              {o.note && <span className="mt-0.5 block text-[10px] font-normal text-white/45">{o.note}</span>}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function Toggle({
-  label,
-  note,
-  on,
-  onChange,
-}: {
-  label: string;
-  note?: string;
-  on: boolean;
-  onChange: (v: boolean) => void;
-}) {
+function Toggle({ label, note, on, onChange }: { label: string; note?: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
       type="button"
@@ -212,25 +148,18 @@ function Toggle({
         {note && <span className="block text-[11px] text-white/45">{note}</span>}
       </span>
       <span className={`relative h-5 w-9 shrink-0 rounded-full transition ${on ? "bg-volt-500" : "bg-white/20"}`}>
-        <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${on ? "left-[18px]" : "left-0.5"}`}
-        />
+        <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${on ? "left-[18px]" : "left-0.5"}`} />
       </span>
     </button>
   );
 }
 
-function Stat({ label, value, unit, tone = "default" }: { label: string; value: string; unit?: string; tone?: "default" | "good" | "warn" | "bad" }) {
-  const colors = {
-    default: "text-white",
-    good: "text-[#5ef2b8]",
-    warn: "text-[#fbbf24]",
-    bad: "text-[#fca5a5]",
-  }[tone];
+function Stat({ label, value, unit, tone = "default" }: { label: string; value: string; unit?: string; tone?: "default" | "good" | "warn" }) {
+  const color = { default: "text-white", good: "text-[#5ef2b8]", warn: "text-[#fbbf24]" }[tone];
   return (
     <div className="rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
       <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">{label}</div>
-      <div className={`mt-1 font-display text-xl font-semibold tabular-nums ${colors}`}>
+      <div className={`mt-1 font-display text-xl font-semibold tabular-nums ${color}`}>
         {value}
         {unit && <span className="ml-1 text-sm font-normal text-white/50">{unit}</span>}
       </div>
@@ -246,6 +175,7 @@ export function SystemLab() {
   const [playing, setPlaying] = useState(true);
   const [selected, setSelected] = useState<NodeId | null>(null);
   const [preset, setPreset] = useState<string | null>(null);
+  const [showYear, setShowYear] = useState(false);
   const raf = useRef<number | null>(null);
   const scrollBox = useRef<HTMLDivElement | null>(null);
 
@@ -259,13 +189,13 @@ export function SystemLab() {
     const el = scrollBox.current;
     if (!el) return;
     const id = requestAnimationFrame(() => {
-      el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) * 0.5);
+      el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) * 0.45);
     });
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Byrja á líðandi mánuði og klukkustund. Gert eftir fyrstu myndbirtingu svo
-  // vefþjónn og vafri skili sama HTML-i.
+  // Byrja á líðandi mánuði og klukkustund, eftir fyrstu myndbirtingu svo
+  // vefþjónn og vafri skili sama HTML-i
   useEffect(() => {
     const id = requestAnimationFrame(() => {
       const now = new Date();
@@ -275,7 +205,6 @@ export function SystemLab() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Spilun dagsins
   useEffect(() => {
     if (!playing) return;
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -292,18 +221,27 @@ export function SystemLab() {
     };
   }, [playing]);
 
-  const day = useMemo(() => simulateDay(input), [input]);
-  const year = useMemo(() => simulateYear(input), [input]);
+  // Áriðillinn er valinn sjálfkrafa eftir hámarksálagi
+  const sized = useMemo<LabInput>(
+    () => ({
+      ...input,
+      inverterVa: suggestInverter(peakLoadKw(input.dailyKwh, input.profile, input.evEnabled ? input.evKw : 0)),
+    }),
+    [input],
+  );
+
+  const day = useMemo(() => simulateDay(sized), [sized]);
+  const year = useMemo(() => simulateYear(sized), [sized]);
   const live = useMemo(() => liveAt(day.hours, hour), [day, hour]);
-  const site = siteBySlug(input.siteSlug);
-  const inv = inverterFor(input.inverterVa);
+  const site = siteBySlug(sized.siteSlug);
+  const inv = inverterFor(sized.inverterVa);
 
   const [sunrise, sunset] = useMemo(() => {
-    const profile = site.solar[input.tilt][input.month];
+    const profile = site.solar[sized.tilt][sized.month];
     const up = profile.map((w, i) => (w > 0 ? i : -1)).filter((i) => i >= 0);
     if (!up.length) return [11, 15];
     return [up[0], up[up.length - 1] + 1];
-  }, [site, input.tilt, input.month]);
+  }, [site, sized.tilt, sized.month]);
 
   const applyPreset = (id: string) => {
     const p = PRESETS.find((x) => x.id === id);
@@ -312,34 +250,24 @@ export function SystemLab() {
     setPreset(id);
   };
 
-  const totalLoad = day.houseKwh + day.evKwh + day.deficitKwh;
   const totalProd = day.solarKwh + day.windKwh;
+  const totalLoad = day.houseKwh + day.evKwh + day.deficitKwh;
   const info = selected ? NODE_INFO[selected] : null;
 
-  const warnings: { tone: "warn" | "bad" | "good"; text: string }[] = [];
+  const warnings: { tone: "warn" | "good"; text: string }[] = [];
   if (day.deficitKwh > 0.05)
-    warnings.push({
-      tone: "bad",
-      text: day.inverterOverload
-        ? `Álagið fer yfir ${nf1.format(inv.contW / 1000)} kW sem áriðillinn ræður við – veldu stærri MultiPlus.`
-        : `Kerfið nær ekki að anna notkuninni: ${nf1.format(day.deficitKwh)} kWst vantar upp á daginn.`,
-    });
+    warnings.push({ tone: "warn", text: `Kerfið annar ekki notkuninni – ${nf1.format(day.deficitKwh)} kWst vantar upp á daginn.` });
   if (day.genKwh > 0.05)
-    warnings.push({
-      tone: "warn",
-      text: `Rafstöðin þarf að keyra ${day.genHours} klst á sólarhring – um ${nf1.format(day.genLitres)} lítrar af olíu.`,
-    });
+    warnings.push({ tone: "warn", text: `Rafstöðin keyrir ${day.genHours} klst á sólarhring, um ${nf1.format(day.genLitres)} lítrar af olíu.` });
   if (day.curtailedKwh > totalProd * 0.25 && totalProd > 1)
     warnings.push({
       tone: "good",
-      text: `${nf0.format((day.curtailedKwh / totalProd) * 100)} % framleiðslunnar kemst ekki fyrir. Stærri rafgeymir, hitakútur eða rafbílahleðsla myndi nýta hana.`,
+      text: `${nf0.format((day.curtailedKwh / totalProd) * 100)} % framleiðslunnar nýtist ekki. Stærri rafgeymir, hitakútur eða rafbíll myndi taka við henni.`,
     });
-  if (day.minSoc <= input.reservePct + 0.5 && day.genKwh < 0.05 && day.deficitKwh < 0.05)
-    warnings.push({ tone: "warn", text: "Rafgeymirinn fer niður í varaforðann – dagurinn er alveg á mörkunum." });
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-ink-950/60 p-4 shadow-[0_30px_80px_-40px_rgb(0_0_0/0.9)] sm:p-6">
-      {/* Forstillingar */}
+      {/* Dæmi */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/45">Dæmi</span>
         {PRESETS.map((p) => (
@@ -352,7 +280,6 @@ export function SystemLab() {
                 ? "border-volt-400 bg-volt-500/20 text-white"
                 : "border-white/12 bg-white/5 text-white/70 hover:border-white/30 hover:text-white"
             }`}
-            title={p.note}
           >
             {p.label}
           </button>
@@ -360,26 +287,23 @@ export function SystemLab() {
       </div>
 
       {/* Myndin */}
-      <div ref={scrollBox} className="mt-4 overflow-x-auto rounded-3xl border border-white/10 bg-ink-900/70">
-        <div className="min-w-[880px]">
+      <div ref={scrollBox} className="mt-4 overflow-x-auto rounded-3xl border border-white/10">
+        <div className="min-w-[860px]">
           <SystemDiagram
             live={live}
             config={{
-              kwp: input.kwp,
-              tilt: input.tilt,
-              turbineKw: input.turbineKw,
-              turbines: input.turbines,
-              batteryKwh: input.batteryKwh,
+              kwp: sized.kwp,
+              batteryKwh: sized.batteryKwh,
               inverterLabel: inv.label,
               inverterKw: inv.contW / 1000,
-              evEnabled: input.evEnabled,
-              generator: input.generator,
-              grid: input.grid,
-              sunFactor: input.sun,
+              turbineKw: sized.turbineKw,
+              evEnabled: sized.evEnabled,
+              generator: sized.generator,
               sunrise,
               sunset,
+              sunFactor: sized.sun,
               siteName: site.name,
-              monthName: MONTHS[input.month],
+              monthName: MONTHS[sized.month],
             }}
             selected={selected}
             onSelect={(id) => setSelected((cur) => (cur === id ? null : id))}
@@ -388,7 +312,7 @@ export function SystemLab() {
       </div>
       <p className="mt-2 text-center text-[11px] text-white/40 sm:hidden">Strjúktu til hliðar til að sjá alla myndina</p>
 
-      {/* Tímastýring */}
+      {/* Tíminn */}
       <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/4 px-4 py-3">
         <button
           type="button"
@@ -428,27 +352,15 @@ export function SystemLab() {
             aria-label="Klukkan"
           />
         </div>
-        <div className="flex items-center gap-4 text-xs text-white/60">
-          <span className="tabular-nums">{nf1.format(live.temp)} °C</span>
-          <span className="tabular-nums">{nf1.format(live.windSpeed)} m/s</span>
-          <span className="hidden tabular-nums sm:inline">
-            {String(sunrise).padStart(2, "0")}:00–{String(sunset).padStart(2, "0")}:00 sól
-          </span>
-        </div>
       </div>
 
-      {/* Upplýsingaspjald þegar smellt er á hluta myndarinnar */}
-      {info && (
+      {/* Skýring á völdum hluta */}
+      {info ? (
         <div className="mt-4 rounded-2xl border border-volt-400/30 bg-volt-500/8 p-5">
           <div className="flex items-start justify-between gap-4">
             <h3 className="font-display text-lg font-semibold text-white">{info.title}</h3>
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="text-xs text-white/50 transition hover:text-white"
-              aria-label="Loka skýringu"
-            >
-              Loka ✕
+            <button type="button" onClick={() => setSelected(null)} className="text-xs text-white/50 transition hover:text-white">
+              Loka
             </button>
           </div>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/75">{info.text}</p>
@@ -466,68 +378,32 @@ export function SystemLab() {
             </Link>
           )}
         </div>
-      )}
-      {!info && (
-        <p className="mt-3 text-center text-xs text-white/40">
-          Smelltu á hvaða hluta myndarinnar sem er til að sjá hvað hann gerir.
-        </p>
+      ) : (
+        <p className="mt-3 text-center text-xs text-white/40">Smelltu á hvaða hluta myndarinnar sem er til að sjá hvað hann gerir.</p>
       )}
 
-      {/* Stýringar */}
-      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+      {/* Stýringar – þrír flokkar */}
+      <div className="mt-5 grid items-start gap-4 lg:grid-cols-3">
         <div className="space-y-4 rounded-2xl border border-white/10 bg-white/4 p-5">
-          <h3 className="font-display text-sm font-semibold uppercase tracking-[0.14em] text-volt-300">
-            Staður og veður
-          </h3>
-          <Choice
-            label="Staðsetning"
-            value={input.siteSlug}
-            columns={3}
-            options={CLIMATE_SITES.map((s) => ({ value: s.slug, label: s.name }))}
-            onChange={(v) => set("siteSlug", v)}
-          />
-          <Slider
-            label="Mánuður"
-            value={input.month}
-            display={MONTHS[input.month]}
-            min={0}
-            max={11}
-            step={1}
-            onChange={(v) => set("month", v)}
-            hint={`Raungögn: ${site.db.replace("PVGIS-", "")} 2021–2023`}
-          />
+          <h3 className="font-display text-sm font-semibold uppercase tracking-[0.14em] text-volt-300">Veðrið</h3>
+          <Slider label="Mánuður" value={input.month} display={MONTHS[input.month]} min={0} max={11} step={1} onChange={(v) => set("month", v)} />
           <Slider
             label="Sólskin"
             value={input.sun}
-            display={
-              input.sun < 0.45 ? "Alskýjað" : input.sun < 0.8 ? "Skýjað" : input.sun < 1.15 ? "Dæmigert" : "Heiðskírt"
-            }
+            display={input.sun < 0.45 ? "Alskýjað" : input.sun < 0.8 ? "Skýjað" : input.sun < 1.15 ? "Dæmigert" : "Heiðskírt"}
             min={0.1}
             max={1.3}
             step={0.05}
             onChange={(v) => set("sun", v)}
-            hint="1,0 = meðalveður mánaðarins á þessum stað"
           />
           <Slider
-            label="Meðalvindur á staðnum"
+            label="Vindur"
             value={input.windMean}
             display={`${nf1.format(input.windMean)} m/s`}
             min={0}
             max={14}
             step={0.5}
             onChange={(v) => set("windMean", v)}
-            hint={`Skjólsælt ≈ 4, opið land ≈ 6–8, berangur ≈ 10. Dægursveiflan kemur úr ERA5.`}
-          />
-          <Choice
-            label="Halli sólarsella"
-            value={input.tilt}
-            columns={4}
-            options={TILTS.map((t) => ({
-              value: t,
-              label: `${t}°`,
-              note: t === 15 ? "sumar" : t === 35 ? "jafnt" : t === 60 ? "vetur" : "veggur",
-            }))}
-            onChange={(v) => set("tilt", v as TiltDeg)}
           />
         </div>
 
@@ -541,7 +417,6 @@ export function SystemLab() {
             max={20}
             step={0.5}
             onChange={(v) => set("kwp", v)}
-            hint={`≈ ${nf0.format(Math.ceil((input.kwp * 1000) / 455))} sellur × 455 W · ${nf0.format(Math.ceil((input.kwp * 1000) / 455) * 2)} m²`}
           />
           <Slider
             label="Rafgeymar"
@@ -551,41 +426,14 @@ export function SystemLab() {
             max={80}
             step={5}
             onChange={(v) => set("batteryKwh", v)}
-            hint={`${nf1.format(input.batteryKwh / 10)} × 48 V / 200 Ah banki`}
           />
-          <Choice
-            label="Áriðill"
-            value={input.inverterVa}
-            columns={4}
-            options={INVERTERS.map((i) => ({ value: i.va, label: `${i.va / 1000} kVA`, note: `${nf1.format(i.contW / 1000)} kW` }))}
-            onChange={(v) => set("inverterVa", v as InverterVa)}
-          />
-          <Choice
+          <Toggle
             label="Vindmylla"
-            value={input.turbineKw}
-            columns={4}
-            options={[
-              { value: 0, label: "Engin" },
-              { value: 0.8, label: "0,8 kW" },
-              { value: 1.5, label: "1,5 kW" },
-              { value: 3, label: "3 kW" },
-            ]}
-            onChange={(v) => set("turbineKw", v)}
+            note="1,5 kW mylla með vindstýringu"
+            on={input.turbineKw > 0}
+            onChange={(v) => set("turbineKw", v ? FIXED.turbineKw : 0)}
           />
-          <Choice
-            label="Varaafl"
-            value={input.generator ? "rafstod" : input.grid ? "net" : "ekkert"}
-            columns={3}
-            options={[
-              { value: "rafstod", label: "Rafstöð" },
-              { value: "net", label: "Netið" },
-              { value: "ekkert", label: "Ekkert" },
-            ]}
-            onChange={(v) => {
-              setInput((prev) => ({ ...prev, generator: v === "rafstod", grid: v === "net" }));
-              setPreset(null);
-            }}
-          />
+          <Toggle label="Rafstöð til vara" note="ræsist sjálfkrafa við 20 % hleðslu" on={input.generator} onChange={(v) => set("generator", v)} />
         </div>
 
         <div className="space-y-4 rounded-2xl border border-white/10 bg-white/4 p-5">
@@ -598,53 +446,38 @@ export function SystemLab() {
             max={60}
             step={1}
             onChange={(v) => set("dailyKwh", v)}
-            hint={`Toppur dagsins ≈ ${nf1.format(day.peakKw)} kW`}
           />
-          <Choice
-            label="Dægursveifla"
-            value={input.profile}
-            columns={3}
-            options={LOAD_PROFILE_LABELS.map((p) => ({ value: p.id, label: p.label }))}
-            onChange={(v) => set("profile", v as LoadProfile)}
-          />
+          <p className="-mt-2 text-[11px] leading-snug text-white/45">
+            Toppur dagsins ≈ {nf1.format(day.peakKw)} kW · {inv.label}
+          </p>
           <Toggle
-            label="Rafbíll í hleðslu"
-            note={`${nf0.format(input.evKwhPerDay)} kWst á dag ≈ ${nf0.format(input.evKwhPerDay * 5.5)} km`}
+            label="Rafbíll"
+            note={`${nf0.format(FIXED.evKwhPerDay)} kWst á dag ≈ ${nf0.format(FIXED.evKwhPerDay * 5.5)} km`}
             on={input.evEnabled}
             onChange={(v) => set("evEnabled", v)}
           />
           {input.evEnabled && (
-            <>
-              <Choice
-                label="Hvenær hleðst bíllinn?"
-                value={input.evMode}
-                columns={3}
-                options={[
-                  { value: "nott", label: "Um nótt" },
-                  { value: "kvold", label: "Á kvöldin" },
-                  { value: "sol", label: "Með sólinni" },
-                ]}
-                onChange={(v) => set("evMode", v as EvMode)}
-              />
-              <Slider
-                label="Hleðsluafl"
-                value={input.evKw}
-                display={`${nf1.format(input.evKw)} kW`}
-                min={1.4}
-                max={11}
-                step={0.1}
-                onChange={(v) => set("evKw", v)}
-              />
-              <Slider
-                label="Orka í bílinn"
-                value={input.evKwhPerDay}
-                display={`${nf0.format(input.evKwhPerDay)} kWst`}
-                min={2}
-                max={40}
-                step={1}
-                onChange={(v) => set("evKwhPerDay", v)}
-              />
-            </>
+            <div className="grid grid-cols-2 gap-1.5">
+              {(
+                [
+                  { value: "nott", label: "Hleðst um nótt" },
+                  { value: "sol", label: "Hleðst með sólinni" },
+                ] as { value: EvMode; label: string }[]
+              ).map((o) => (
+                <button
+                  key={o.value}
+                  type="button"
+                  onClick={() => set("evMode", o.value)}
+                  className={`rounded-xl border px-2 py-2 text-center text-xs font-semibold transition ${
+                    input.evMode === o.value
+                      ? "border-volt-400 bg-volt-500/15 text-white"
+                      : "border-white/12 bg-white/4 text-white/65 hover:border-white/30 hover:text-white"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -656,19 +489,10 @@ export function SystemLab() {
             <div
               key={w.text}
               className={`flex gap-3 rounded-2xl border px-4 py-3 text-sm ${
-                w.tone === "bad"
-                  ? "border-red-400/40 bg-red-500/10 text-red-100"
-                  : w.tone === "warn"
-                    ? "border-amber-400/40 bg-amber-500/10 text-amber-100"
-                    : "border-volt-400/30 bg-volt-500/8 text-volt-100"
+                w.tone === "warn" ? "border-amber-400/40 bg-amber-500/10 text-amber-100" : "border-volt-400/30 bg-volt-500/8 text-volt-100"
               }`}
             >
-              <span
-                aria-hidden="true"
-                className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-                  w.tone === "bad" ? "bg-red-400" : w.tone === "warn" ? "bg-amber-400" : "bg-volt-400"
-                }`}
-              />
+              <span aria-hidden="true" className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${w.tone === "warn" ? "bg-amber-400" : "bg-volt-400"}`} />
               <span>{w.text}</span>
             </div>
           ))}
@@ -676,7 +500,7 @@ export function SystemLab() {
       )}
 
       {/* Tölur dagsins */}
-      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Framleitt í dag" value={nf1.format(totalProd)} unit="kWst" />
         <Stat label="Notað í dag" value={nf1.format(totalLoad)} unit="kWst" />
         <Stat
@@ -685,105 +509,76 @@ export function SystemLab() {
           unit="%"
           tone={day.selfSufficiency > 0.98 ? "good" : day.selfSufficiency > 0.7 ? "default" : "warn"}
         />
-        <Stat
-          label="Lægsta hleðsla"
-          value={nf0.format(day.minSoc)}
-          unit="%"
-          tone={day.minSoc <= input.reservePct + 0.5 ? "warn" : "default"}
-        />
-        <Stat
-          label="Umfram orka"
-          value={nf1.format(day.curtailedKwh)}
-          unit="kWst"
-          tone={day.curtailedKwh > totalProd * 0.25 && totalProd > 1 ? "warn" : "default"}
-        />
-        <Stat
-          label={input.grid ? "Af neti" : "Rafstöð"}
-          value={input.grid ? nf1.format(day.gridInKwh) : nf1.format(day.genKwh)}
-          unit="kWst"
-          tone={day.genKwh > 0.05 || day.gridInKwh > 0.05 ? "warn" : "good"}
-        />
+        <Stat label="Rafstöð" value={nf1.format(day.genKwh)} unit="kWst" tone={day.genKwh > 0.05 ? "warn" : "good"} />
       </div>
 
-      {/* Ferlar */}
-      <div className="mt-5 grid gap-4 xl:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-white/4 p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="font-display text-sm font-semibold text-white">
-              Sólarhringurinn · {MONTHS[input.month].toLowerCase()} í {site.name}
-            </h3>
-            <div className="flex flex-wrap gap-3 text-[11px] text-white/55">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-brand-500" /> sól
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-volt-500" /> vindur
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-500" /> notkun
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-3 rounded-full border-t border-dashed border-white/70" /> hleðslustaða
-              </span>
-            </div>
-          </div>
-          <div className="mt-2">
-            <DayChart
-              day={day}
-              hour={hour}
-              onScrub={(h) => {
-                setPlaying(false);
-                setHour(h);
-              }}
-            />
-          </div>
-          <p className="mt-1 text-[11px] text-white/40">Dragðu yfir ferilinn til að færa tímann.</p>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-white/4 p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="font-display text-sm font-semibold text-white">Árið í heild</h3>
-            <div className="flex flex-wrap gap-3 text-[11px] text-white/55">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-brand-500" /> framleiðsla
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-500" /> notkun
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-red-600" /> varaafl
-              </span>
-            </div>
-          </div>
-          <div className="mt-2">
-            <YearChart year={year} month={input.month} onSelect={(m) => set("month", m)} />
-          </div>
-          <div className="mt-2 grid grid-cols-3 gap-3 text-sm">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">Framleiðsla</div>
-              <div className="font-display font-semibold tabular-nums text-white">
-                {nf0.format(year.solarKwh + year.windKwh)} <span className="text-xs font-normal text-white/50">kWst/ári</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">Sjálfbærni</div>
-              <div className="font-display font-semibold tabular-nums text-white">
-                {nf0.format(year.selfSufficiency * 100)} <span className="text-xs font-normal text-white/50">%</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">
-                {input.grid ? "Af neti" : "Olía á rafstöð"}
-              </div>
-              <div className="font-display font-semibold tabular-nums text-white">
-                {input.grid
-                  ? `${nf0.format(year.genKwh + year.deficitKwh)} `
-                  : `${nf0.format(year.genLitres)} `}
-                <span className="text-xs font-normal text-white/50">{input.grid ? "kWst" : "l/ári"}</span>
-              </div>
-            </div>
+      {/* Sólarhringsferill */}
+      <div className="mt-5 rounded-2xl border border-white/10 bg-white/4 p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="font-display text-sm font-semibold text-white">
+            Sólarhringurinn · {MONTHS[sized.month].toLowerCase()} í {site.name}
+          </h3>
+          <div className="flex flex-wrap gap-3 text-[11px] text-white/55">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-brand-500" /> sól
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-volt-500" /> vindur
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-amber-500" /> notkun
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-white/70" /> hleðslustaða
+            </span>
           </div>
         </div>
+        <div className="mt-2">
+          <DayChart
+            day={day}
+            hour={hour}
+            onScrub={(h) => {
+              setPlaying(false);
+              setHour(h);
+            }}
+          />
+        </div>
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[11px] text-white/40">Dragðu yfir ferilinn til að færa tímann.</p>
+          <button
+            type="button"
+            onClick={() => setShowYear((v) => !v)}
+            aria-expanded={showYear}
+            className="rounded-full border border-white/15 px-3.5 py-1.5 text-xs font-semibold text-white/75 transition hover:border-white/40 hover:text-white"
+          >
+            {showYear ? "Fela árið" : "Sjá allt árið"}
+          </button>
+        </div>
+        {showYear && (
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <YearChart year={year} month={sized.month} onSelect={(m) => set("month", m)} />
+            <div className="mt-2 grid grid-cols-3 gap-3 text-sm">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">Framleiðsla</div>
+                <div className="font-display font-semibold tabular-nums text-white">
+                  {nf0.format(year.solarKwh + year.windKwh)} <span className="text-xs font-normal text-white/50">kWst/ári</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">Sjálfbærni</div>
+                <div className="font-display font-semibold tabular-nums text-white">
+                  {nf0.format(year.selfSufficiency * 100)} <span className="text-xs font-normal text-white/50">%</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.12em] text-white/45">Olía á rafstöð</div>
+                <div className="font-display font-semibold tabular-nums text-white">
+                  {nf0.format(year.genLitres)} <span className="text-xs font-normal text-white/50">l/ári</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
@@ -802,10 +597,10 @@ export function SystemLab() {
       </div>
 
       <p className="mt-5 text-xs leading-relaxed text-white/40">
-        Veðurgögnin eru raunveruleg: klukkustundamælingar úr PVGIS 5.3 (JRC, framkvæmdastjórn ESB) fyrir árin
-        2021–2023, meðaltöluð í dægursveiflu hvers mánaðar. Sólarframleiðslan miðast við sellur í suður með 14 %
-        kerfistöpum, vindurinn við aflferil lítillar myllu og hæðarleiðréttan vindhraða. Hermirinn er til skýringar –
-        raunverulegt kerfi er hannað út frá staðháttum, skugga og notkunarmynstri hvers og eins.
+        Veðurgögnin eru raunveruleg: klukkustundamælingar úr PVGIS 5.3 (JRC, framkvæmdastjórn ESB) fyrir Reykjavík árin
+        2021–2023, meðaltalaðar í dægursveiflu hvers mánaðar. Sellurnar snúa í suður með 35° halla og 14 % kerfistöpum,
+        áriðillinn er valinn sjálfkrafa eftir hámarksálagi. Hermirinn er til skýringar – raunverulegt kerfi er hannað út
+        frá staðháttum, skugga og notkunarmynstri hvers og eins.
       </p>
     </div>
   );

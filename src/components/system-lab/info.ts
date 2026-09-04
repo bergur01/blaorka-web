@@ -96,14 +96,6 @@ export const NODE_INFO: Record<NodeId, NodeInfo> = {
     href: "/frodleikur/aridlar",
     hrefLabel: "Áriðlar og hleðslutæki",
   },
-  actafla: {
-    title: "AC tafla",
-    text: "Venjuleg raftafla með lekaliða og varnarrofum. Handan hennar sér heimilið engan mun á því hvort orkan kom úr sól, vindi, rafgeymi eða rafstöð.",
-    facts: [
-      "Hægt að forgangsraða rásum – nauðsynjar fá alltaf straum",
-      "Stórir toppar (hleðsla, ofnar) er best að tímastilla",
-    ],
-  },
   cerbo: {
     title: "Cerbo GX",
     text: "Heilinn í kerfinu. Cerbo les alla íhlutina, stýrir hleðslu og ræsingu rafstöðvar, og sendir gögnin í VRM-vefgáttina svo hægt sé að fylgjast með kerfinu hvaðan sem er.",

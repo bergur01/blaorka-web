@@ -67,6 +67,18 @@ export const LOAD_PROFILE_LABELS: { id: LoadProfile; label: string; note: string
 
 export type EvMode = "nott" | "kvold" | "sol";
 
+/** Hæsta klukkustundarálag miðað við dagsnotkun, dægursveiflu og rafbíl. */
+export function peakLoadKw(dailyKwh: number, profile: LoadProfile, evKw = 0): number {
+  const shape = LOAD_SHAPES[profile] ?? LOAD_SHAPES.heimili;
+  const sum = shape.reduce((a, b) => a + b, 0);
+  return (dailyKwh * Math.max(...shape)) / sum + evKw;
+}
+
+/** Minnsti MultiPlus sem ræður við álagið með 15 % borði. */
+export function suggestInverter(peakKw: number): InverterVa {
+  return (INVERTERS.find((i) => i.contW / 1000 >= peakKw * 1.15) ?? INVERTERS[INVERTERS.length - 1]).va;
+}
+
 export interface LabInput {
   siteSlug: string;
   month: number; // 0–11
