@@ -322,7 +322,6 @@ export function SystemDiagram({
   const elevation = isDay ? r2(Math.sin(Math.PI * clamp(frac, 0, 1))) : 0;
   const darkness = r2(clamp(1 - elevation * 1.7, 0, 1));
 
-  const bladeDur = live.windSpeed > 3 ? clamp(16 / live.windSpeed, 0.4, 5) : 0;
   const socFill = clamp(live.soc / 100, 0, 1);
   const charging = live.battery > 0.01;
   const discharging = live.battery < -0.01;
@@ -353,7 +352,7 @@ export function SystemDiagram({
         ${(Object.keys(EDGES) as EdgeId[]).map((k) => `.sl-dot-${k} { offset-path: path("${EDGES[k]}"); }`).join("\n        ")}
         @keyframes sl-travel { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
         /* Snúningsásinn er nafið sjálft, gefið í hnitum myndarinnar */
-        .sl-blades { transform-box: view-box; transform-origin: 115px 300px; animation: sl-spin linear infinite; }
+        .sl-blades { transform-box: view-box; transform-origin: 115px 300px; animation: sl-spin 9s linear infinite; }
         @keyframes sl-spin { to { transform: rotate(360deg); } }
         .sl-rays { transform-box: view-box; transform-origin: 110px 102px; animation: sl-spin 50s linear infinite; }
         .sl-fill { transition: width .5s ease; }
@@ -495,12 +494,7 @@ export function SystemDiagram({
           <path d="M111 430 L113 306 L117 306 L119 430 Z" fill="#ffffff" fillOpacity=".8" />
           <line x1="99" y1="431" x2="131" y2="431" stroke="#ffffff" strokeOpacity=".6" strokeWidth="3" strokeLinecap="round" />
           <rect x="108" y="294" width="16" height="10" rx="4" fill="#ffffff" fillOpacity=".9" />
-          <g
-            className="sl-blades"
-            style={bladeDur ? { animationDuration: `${bladeDur}s` } : { animation: "none" }}
-            fill="#ffffff"
-            fillOpacity=".95"
-          >
+          <g className="sl-blades" fill="#ffffff" fillOpacity=".95">
             {[0, 120, 240].map((a) => (
               <path
                 key={a}

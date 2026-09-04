@@ -208,11 +208,12 @@ export function SystemLab() {
   useEffect(() => {
     if (!playing) return;
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // 0,7 klst á sekúndu – sólarhringurinn líður á rúmlega hálfri mínútu
     let last = performance.now();
     const tick = (now: number) => {
       const dt = (now - last) / 1000;
       last = now;
-      setHour((h) => (h + dt * 2.4) % 24);
+      setHour((h) => (h + dt * 0.7) % 24);
       raf.current = requestAnimationFrame(tick);
     };
     raf.current = requestAnimationFrame(tick);
