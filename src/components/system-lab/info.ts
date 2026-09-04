@@ -127,10 +127,10 @@ export const NODE_INFO: Record<NodeId, NodeInfo> = {
   },
   varaafl: {
     title: "Varaafl",
-    text: "Í íslenskum vetri dugar hvorki sól né vindur alltaf. Rafstöð sem ræsist sjálfkrafa við lága hleðslustöðu keyrir í fáeina tíma í senn – eða þá að kerfið er nettengt og sækir afganginn þangað.",
+    text: "Í íslenskum vetri dugar hvorki sól né vindur alltaf. Rafstöðin ræsist sjálfkrafa þegar rafgeymirinn er kominn niður í varaforðann og brúar bilið þar til birtan eða vindurinn koma aftur.",
     facts: [
-      "Sjálfvirk ræsing við 20 % hleðslu, keyrir 1–2 tíma",
-      "Rafstöð sem hleður rafgeymi keyrir á góðu álagi og eyðir minna",
+      "Hér tekur hún nákvæmlega það sem upp á vantar – í raunkerfi er hún frekar keyrð í lotum sem hlaða rafgeyminn í leiðinni",
+      "Rafstöð undir góðu álagi eyðir mun minna á hverja kWst en hálftóm",
       "Slórfell: olíunotkun fór úr 12.000 í 6.000 lítra á ári",
     ],
     href: "/frettir",

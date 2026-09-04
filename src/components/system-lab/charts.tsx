@@ -47,9 +47,11 @@ export function DayChart({
   const stackedSolar = hours.map((h) => h.solar);
   const stackedAll = prod;
 
+  // Hleðslustaðan er staðan í lok hverrar klukkustundar – ferillinn byrjar því
+  // á stöðunni frá kvöldinu áður og endar á sömu tölu sólarhring síðar.
   const socPath = (() => {
-    let d = `M ${x(0.5)} ${ySoc(hours[0].soc)}`;
-    for (let i = 1; i < 24; i++) d += ` L ${x(i + 0.5)} ${ySoc(hours[i].soc)}`;
+    let d = `M ${x(0)} ${ySoc(hours[23].soc)}`;
+    for (let i = 0; i < 24; i++) d += ` L ${x(i + 1)} ${ySoc(hours[i].soc)}`;
     return d;
   })();
 

@@ -77,6 +77,9 @@ function liveAt(hours: LabHour[], t: number): LiveState {
   const f = t - Math.floor(t);
   const a = hours[i];
   const b = hours[j];
+  // Hleðslustaðan í hverri færslu er staðan í LOK klukkustundarinnar, svo
+  // staðan á tíma t liggur milli loka fyrri klukkustundar og þessarar.
+  const socFrom = hours[(i + 23) % 24].soc;
   return {
     hour: t,
     solar: lerp(a.solar, b.solar, f),
@@ -84,7 +87,7 @@ function liveAt(hours: LabHour[], t: number): LiveState {
     house: lerp(a.house, b.house, f),
     ev: lerp(a.ev, b.ev, f),
     battery: lerp(a.battery, b.battery, f),
-    soc: lerp(a.soc, b.soc, f),
+    soc: lerp(socFrom, a.soc, f),
     gen: lerp(a.gen, b.gen, f),
     grid: lerp(a.grid, b.grid, f),
     curtailed: lerp(a.curtailed, b.curtailed, f),

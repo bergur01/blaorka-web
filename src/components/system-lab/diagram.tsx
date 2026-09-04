@@ -325,6 +325,7 @@ export function SystemDiagram({
   const socFill = clamp(live.soc / 100, 0, 1);
   const charging = live.battery > 0.01;
   const discharging = live.battery < -0.01;
+  const full = live.soc > 99.4 && !discharging;
   const lightsOn = darkness > 0.35;
   const load = live.house + live.ev;
   const backupOn = live.gen > 0.01;
@@ -582,31 +583,29 @@ export function SystemDiagram({
         y={320}
         w={200}
         h={100}
-        title={`Rafgeymar · ${Math.round(config.batteryKwh)} kWst`}
+        title="Rafgeymar"
         selected={selected}
         onSelect={onSelect}
       >
-        <rect x={500} y={348} width={160} height={30} rx="6" fill="#04101d" stroke="#ffffff" strokeOpacity=".22" />
-        <rect className="sl-fill" x={502} y={350} width={r2(socFill * 156)} height={26} rx="4" fill="url(#sl-batt)" />
-        <g stroke="#0a1e33" strokeWidth="2.5" opacity=".7">
-          {[1, 2, 3].map((i) => (
-            <line key={i} x1={500 + 40 * i} y1={348} x2={500 + 40 * i} y2={378} />
-          ))}
-        </g>
-        <text x={580} y={369} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" style={{ fontVariantNumeric: "tabular-nums" }}>
+        <rect x={500} y={352} width={160} height={30} rx="8" fill="#04101d" stroke="#ffffff" strokeOpacity=".22" />
+        <rect className="sl-fill" x={502} y={354} width={r2(socFill * 156)} height={26} rx="6" fill="url(#sl-batt)" />
+        <text x={580} y={373} textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="700" style={{ fontVariantNumeric: "tabular-nums" }}>
           {`${Math.round(live.soc)} %`}
+        </text>
+        <text x={580} y={396} textAnchor="middle" fill="#ffffff" fillOpacity=".55" fontSize="10" style={{ fontVariantNumeric: "tabular-nums" }}>
+          {`${nf1((live.soc / 100) * config.batteryKwh)} af ${Math.round(config.batteryKwh)} kWst`}
         </text>
         <text
           x={580}
-          y={400}
+          y={411}
           textAnchor="middle"
-          fill={charging ? "#5ef2b8" : discharging ? "#fbbf24" : "#ffffff"}
-          fillOpacity={charging || discharging ? 0.95 : 0.45}
-          fontSize="11"
+          fill={full ? "#5ef2b8" : charging ? "#5ef2b8" : discharging ? "#fbbf24" : "#ffffff"}
+          fillOpacity={full || charging || discharging ? 0.95 : 0.45}
+          fontSize="10.5"
           fontWeight="600"
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
-          {charging ? `hleðst  +${nf1(live.battery)} kW` : discharging ? `afhleðst  −${nf1(-live.battery)} kW` : "í hvíld"}
+          {full ? "fullhlaðinn" : charging ? `hleðst  +${nf1(live.battery)} kW` : discharging ? `afhleðst  −${nf1(-live.battery)} kW` : "í hvíld"}
         </text>
       </Box>
 
@@ -629,11 +628,20 @@ export function SystemDiagram({
           strokeWidth="2"
           fill="none"
         />
-        <text x={840} y={266} textAnchor="end" fill="#ffffff" fillOpacity=".75" fontSize="11" style={{ fontVariantNumeric: "tabular-nums" }}>
-          {`${Math.round((load / Math.max(0.1, config.inverterKw)) * 100)} %`}
+        <text x={842} y={266} textAnchor="end" fill="#ffffff" fillOpacity=".85" fontSize="12" fontWeight="600" style={{ fontVariantNumeric: "tabular-nums" }}>
+          {kw(load)}
         </text>
-        <text x={780} y={294} textAnchor="middle" fill="#7ee8f5" fillOpacity=".6" fontSize="9.5" letterSpacing=".06em">
-          48 V DC → 230 V AC
+        <rect x={718} y={278} width={124} height={7} rx="3.5" fill="#04101d" stroke="#ffffff" strokeOpacity=".18" />
+        <rect
+          x={719}
+          y={279}
+          width={r2(clamp(load / Math.max(0.1, config.inverterKw), 0, 1) * 122)}
+          height={5}
+          rx="2.5"
+          fill={load > config.inverterKw * 0.9 ? "#f59e0b" : "#4bd8ec"}
+        />
+        <text x={780} y={300} textAnchor="middle" fill="#ffffff" fillOpacity=".5" fontSize="9.5">
+          {`af ${nf1(config.inverterKw)} kW · 48 V → 230 V`}
         </text>
       </Box>
 

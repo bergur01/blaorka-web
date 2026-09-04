@@ -21,6 +21,12 @@ export const BATT_EFF = 0.98;
 export const BATT_C_RATE = 0.5;
 /** Lítrar af olíu á hverja kWst frá rafstöð (dæmigerð dísilrafstöð undir hálfu álagi) */
 export const GEN_LITRES_PER_KWH = 0.4;
+/**
+ * Rafstöðin í herminum tekur nákvæmlega það sem sól, vindur og rafgeymir ná
+ * ekki að leggja til. Raunveruleg rafstöð er keyrð í lotum og hleður
+ * rafgeyminn í leiðinni, en hér er hún látin fylgja orkuþörfinni beint svo
+ * tölurnar hreyfist jafnt og þétt með stillingunum í stað þess að stökkva.
+ */
 /** Vindstuðull (power law) fyrir hæðarleiðréttingu vindhraða yfir opnu landi */
 export const WIND_SHEAR = 0.14;
 
@@ -241,10 +247,19 @@ function evWindow(mode: EvMode, hour: number): boolean {
 // ---------- Sólarhringurinn ----------
 
 /**
- * Keyrir sólarhringinn. Byrjað er á 60 % hleðslu og dagurinn keyrður þrisvar
- * svo hleðslustaðan nái jafnvægi – niðurstaðan er síðasti dagurinn.
+ * Keyrir sólarhringinn aftur og aftur þar til hann er orðinn lokaður hringur:
+ * hleðslustaðan í lok dags er sú sama og í upphafi hans. Án þess stykki
+ * hleðslustaðan á miðnætti og breyttist í rykkjum við hverja stillingu.
  */
-export function simulateDay(input: LabInput): LabDay {
+interface DayRun {
+  hours: LabHour[];
+  /** Hleðslustaða í lok sólarhringsins, 0–1 */
+  endSoc: number;
+  overload: boolean;
+}
+
+/** Keyrir einn sólarhring frá gefinni hleðslustöðu. */
+function runDay(input: LabInput, startSoc: number): DayRun {
   const site = siteBySlug(input.siteSlug);
   const inv = inverterFor(input.inverterVa);
   const usableKwh = input.batteryKwh;
@@ -254,118 +269,125 @@ export function simulateDay(input: LabInput): LabDay {
   const shape = LOAD_SHAPES[input.profile] ?? LOAD_SHAPES.heimili;
   const shapeSum = shape.reduce((a, b) => a + b, 0);
 
-  let soc = 0.6;
-  let hours: LabHour[] = [];
+  const hours: LabHour[] = [];
+  let soc = startSoc;
   let overload = false;
+  let evLeft = input.evEnabled ? input.evKwhPerDay : 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const solar = solarKw(site, input.month, hour, input.tilt, input.kwp, input.sun);
+    const v10 = site.wind[input.month][hour] * (input.windMean / site.windCubeMean10m);
+    const windSpeed = windAtHub(v10, input.hubHeight);
+    const wind = input.turbineKw > 0 ? turbinePower(windSpeed, input.turbineKw) * input.turbines : 0;
 
-  for (let pass = 0; pass < 3; pass++) {
-    hours = [];
-    overload = false;
-    let evLeft = input.evEnabled ? input.evKwhPerDay : 0;
-    for (let hour = 0; hour < 24; hour++) {
-      const solar = solarKw(site, input.month, hour, input.tilt, input.kwp, input.sun);
-      const v10 = site.wind[input.month][hour] * (input.windMean / site.windCubeMean10m);
-      const windSpeed = windAtHub(v10, input.hubHeight);
-      const wind = input.turbineKw > 0 ? turbinePower(windSpeed, input.turbineKw) * input.turbines : 0;
+    const house = (input.dailyKwh * shape[hour]) / shapeSum;
 
-      const house = (input.dailyKwh * shape[hour]) / shapeSum;
+    // Framleiðsla og grunnnotkun mætast á DC-teininum
+    const prod = solar + wind;
+    let ev = 0;
 
-      // Framleiðsla og grunnnotkun mætast á DC-teininum
-      const prod = solar + wind;
-      let ev = 0;
+    // Húsið hefur forgang í áriðlinum, rafbíllinn fær það sem eftir er
+    const contKw = inv.contW / 1000;
+    const servedHouse = Math.min(house, contKw);
+    let deficit = house - servedHouse;
+    if (deficit > 0.001) overload = true;
 
-      // Húsið hefur forgang í áriðlinum, rafbíllinn fær það sem eftir er
-      const contKw = inv.contW / 1000;
-      const servedHouse = Math.min(house, contKw);
-      let deficit = house - servedHouse;
-      if (deficit > 0.001) overload = true;
-
-      // Rafbíllinn: í sólarham tekur hann aðeins það sem annars færi til spillis
-      if (input.evEnabled && evLeft > 0.01 && evWindow(input.evMode, hour)) {
-        const headroom = Math.max(0, contKw - servedHouse);
-        if (input.evMode === "sol") {
-          const surplusAc = Math.max(0, (prod - servedHouse / INVERTER_EFF) * INVERTER_EFF);
-          // Sólarhleðsla er hófsöm: bara ef rafgeymirinn er kominn vel á veg
-          ev = soc < 0.6 ? 0 : clamp(surplusAc, 0, Math.min(input.evKw, headroom, evLeft));
-        } else {
-          const windowHours = input.evMode === "nott" ? 7 : 6;
-          ev = Math.min(input.evKw, input.evKwhPerDay / windowHours, headroom, evLeft);
-        }
-        evLeft -= ev;
-      }
-
-      const servedAc = servedHouse + ev;
-
-      // Allt AC-álag er sótt í gegnum áriðilinn
-      const dcDemand = servedAc / INVERTER_EFF;
-      const net = prod - dcDemand;
-
-      let battery = 0;
-      let gen = 0;
-      let grid = 0;
-      let curtailed = 0;
-
-      if (net >= 0) {
-        // Afgangur – hlaða rafgeymi, svo net, svo skerðing
-        const room = ((1 - soc) * usableKwh) / BATT_EFF;
-        const charge = Math.min(net, battMaxKw, room);
-        battery = charge;
-        soc += (charge * BATT_EFF) / usableKwh;
-        const left = net - charge;
-        if (left > 0) {
-          if (input.grid) grid = -left;
-          else curtailed = left;
-        }
+    // Rafbíllinn: í sólarham tekur hann aðeins það sem annars færi til spillis
+    if (input.evEnabled && evLeft > 0.01 && evWindow(input.evMode, hour)) {
+      const headroom = Math.max(0, contKw - servedHouse);
+      if (input.evMode === "sol") {
+        const surplusAc = Math.max(0, (prod - servedHouse / INVERTER_EFF) * INVERTER_EFF);
+        // Sólarhleðsla er hófsöm: bara ef rafgeymirinn er kominn vel á veg
+        ev = soc < 0.6 ? 0 : clamp(surplusAc, 0, Math.min(input.evKw, headroom, evLeft));
       } else {
-        // Vantar orku – taka af rafgeymi niður að varaforða
-        const need = -net;
-        const available = Math.max(0, ((soc - reserve) * usableKwh) * BATT_EFF);
-        const draw = Math.min(need, battMaxKw, available);
-        battery = -draw;
-        soc -= draw / BATT_EFF / usableKwh;
-        let short = need - draw;
-        if (short > 0.001) {
-          if (input.grid) {
-            grid = short;
-            short = 0;
-          } else if (input.generator) {
-            // Rafstöðin keyrir álagið og hleður rafgeyminn í leiðinni
-            const chargeRoom = Math.min(
-              battMaxKw,
-              ((1 - soc) * usableKwh) / BATT_EFF,
-              inv.chargeW / 1000,
-            );
-            gen = short + chargeRoom;
-            battery += chargeRoom;
-            soc += (chargeRoom * BATT_EFF) / usableKwh;
-            short = 0;
-          } else {
-            // Ekkert varaafl: notkunin skerðist
-            deficit += short * INVERTER_EFF;
-            short = 0;
-          }
+        const windowHours = input.evMode === "nott" ? 7 : 6;
+        ev = Math.min(input.evKw, input.evKwhPerDay / windowHours, headroom, evLeft);
+      }
+      evLeft -= ev;
+    }
+
+    const servedAc = servedHouse + ev;
+
+    // Allt AC-álag er sótt í gegnum áriðilinn
+    const dcDemand = servedAc / INVERTER_EFF;
+    const net = prod - dcDemand;
+
+    let battery = 0;
+    let gen = 0;
+    let grid = 0;
+    let curtailed = 0;
+
+    if (net >= 0) {
+      // Afgangur – hlaða rafgeymi, svo net, svo skerðing
+      const room = ((1 - soc) * usableKwh) / BATT_EFF;
+      const charge = Math.min(net, battMaxKw, room);
+      battery = charge;
+      soc += (charge * BATT_EFF) / usableKwh;
+      const left = net - charge;
+      if (left > 0) {
+        if (input.grid) grid = -left;
+        else curtailed = left;
+      }
+    } else {
+      // Vantar orku – taka af rafgeymi niður að varaforða
+      const need = -net;
+      const available = Math.max(0, ((soc - reserve) * usableKwh) * BATT_EFF);
+      const draw = Math.min(need, battMaxKw, available);
+      battery = -draw;
+      soc -= draw / BATT_EFF / usableKwh;
+      const short = need - draw;
+      if (short > 0.001) {
+        if (input.grid) {
+          // Netið fyllir upp í það sem vantar
+          grid = short;
+        } else if (input.generator) {
+          // Rafstöðin brúar bilið meðan rafgeymirinn er í varaforðanum
+          gen = short;
+        } else {
+          // Ekkert varaafl: notkunin skerðist
+          deficit += short * INVERTER_EFF;
         }
       }
-
-      soc = clamp(soc, 0, 1);
-
-      hours.push({
-        hour,
-        solar: r4(solar),
-        wind: r4(wind),
-        house: r4(servedHouse),
-        ev: r4(ev),
-        battery: r4(battery),
-        soc: r4(soc * 100),
-        gen: r4(gen),
-        grid: r4(grid),
-        curtailed: r4(curtailed),
-        deficit: r4(deficit),
-        windSpeed: r4(windSpeed),
-        temp: site.temp[input.month][hour],
-      });
     }
+
+    soc = clamp(soc, 0, 1);
+
+    hours.push({
+      hour,
+      solar: r4(solar),
+      wind: r4(wind),
+      house: r4(servedHouse),
+      ev: r4(ev),
+      battery: r4(battery),
+      soc: r4(soc * 100),
+      gen: r4(gen),
+      grid: r4(grid),
+      curtailed: r4(curtailed),
+      deficit: r4(deficit),
+      windSpeed: r4(windSpeed),
+      temp: site.temp[input.month][hour],
+    });
   }
+
+  return { hours, endSoc: soc, overload };
+}
+
+/**
+ * Sólarhringurinn eins og hann lítur út þegar kerfið er komið í jafnvægi.
+ *
+ * Hleðslustaðan í lok dags verður að vera sú sama og í upphafi hans, annars
+ * stykki talan á miðnætti og hoppaði til við hverja stillingu. Sú staða er
+ * fundin með helmingunarleit: byrji dagurinn hærra endar hann hærra, svo
+ * skurðpunkturinn er einn og leitin finnur hann alltaf.
+ */
+export function simulateDay(input: LabInput): LabDay {
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 22; i++) {
+    const mid = (lo + hi) / 2;
+    if (runDay(input, mid).endSoc > mid) lo = mid;
+    else hi = mid;
+  }
+  const { hours, overload } = runDay(input, (lo + hi) / 2);
 
   const sum = (f: (h: LabHour) => number) => r4(hours.reduce((a, h) => a + f(h), 0));
   const houseKwh = sum((h) => h.house);
