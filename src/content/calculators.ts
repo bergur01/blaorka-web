@@ -1,7 +1,8 @@
 import type { Calculator } from "@/lib/types";
 
-// Reiknivélar – aðeins skilgreining á inntaki/úttaki í skeleton.
-// Útreikningar koma síðar í src/lib/calculators/*.
+// Skilgreining reiknivélanna: heiti, lýsing, inntak og úttak sem birtast í
+// yfirlitinu. Útreikningarnir sjálfir eru í src/lib/<efni>/sizing.ts og
+// viðmótin í src/components/calculators/*.
 
 export const calculators: Calculator[] = [
   {
@@ -181,7 +182,7 @@ export const calculators: Calculator[] = [
     description:
       "Reiknaðu nýtanlega orku, keyrslutíma og hversu marga rafgeyma þarf fyrir tiltekið álag.",
     icon: "battery",
-    status: "soon",
+    status: "live",
     inputs: [
       {
         key: "battType",
@@ -223,7 +224,7 @@ export const calculators: Calculator[] = [
     description:
       "Finndu rétt þversnið á DC köplum út frá straumi, lengd og leyfilegu spennufalli.",
     icon: "cable",
-    status: "soon",
+    status: "live",
     inputs: [
       { key: "current", label: "Straumur", unit: "A", placeholder: "t.d. 200", type: "number" },
       {

@@ -4,6 +4,7 @@
 // Föllin eru async svo hægt sé að skipta seed-gögnum út fyrir gagnagrunn
 // (Postgres/Prisma, Supabase o.s.frv.) án þess að snerta síðurnar sjálfar.
 
+import { formatDateIs } from "@/lib/format";
 import { newsSeed } from "@/content/news";
 import { solutions } from "@/content/solutions";
 import { knowledgeArticles } from "@/content/knowledge";
@@ -72,10 +73,5 @@ export async function getGalleryByIds(ids: string[]): Promise<GalleryImage[]> {
 }
 
 export function formatDate(iso: string): string {
-  const d = new Date(iso + "T00:00:00");
-  return new Intl.DateTimeFormat("is-IS", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(d);
+  return formatDateIs(iso);
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCalculators } from "@/lib/content";
-import { Badge, Container, PageHero, Section, WipNote } from "@/components/ui";
+import { Container, PageHero, Section } from "@/components/ui";
 import { ArrowRight, Icon } from "@/components/icons";
 import { SolarDay } from "@/components/solar-day";
 
@@ -38,11 +38,6 @@ export default async function CalculatorsPage() {
                     <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-[0_8px_20px_-8px_rgb(18_136_202/0.8)] transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <Icon name={c.icon} className="h-6 w-6" />
                     </span>
-                    {c.status === "soon" ? (
-                      <Badge tone="neutral">Væntanlegt</Badge>
-                    ) : (
-                      <Badge>Virk</Badge>
-                    )}
                   </div>
                   <h2 className={`mt-6 font-display font-semibold tracking-tight ${i === 0 ? "text-2xl sm:text-3xl" : "text-xl"}`}>
                     {c.title}
@@ -69,12 +64,6 @@ export default async function CalculatorsPage() {
                 </div>
               </Link>
             ))}
-          </div>
-          <div className="mt-10">
-            <WipNote>
-              Reiknivélarnar eru beinagrind – inntak og úttak eru skilgreind en útreikningar
-              koma í næsta skrefi.
-            </WipNote>
           </div>
         </Container>
       </Section>

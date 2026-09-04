@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getKnowledgeArticles } from "@/lib/content";
-import { Container, Eyebrow, Heading, Lead, PageHero, Section, WipNote } from "@/components/ui";
+import { Container, Eyebrow, Heading, Lead, PageHero, Section } from "@/components/ui";
 import { ArrowRight, Icon } from "@/components/icons";
 import { InverterWave } from "@/components/inverter-wave";
 import { SystemLab } from "@/components/system-lab/system-lab";
@@ -72,12 +72,6 @@ export default async function KnowledgePage() {
                 </div>
               </Link>
             ))}
-          </div>
-          <div className="mt-10">
-            <WipNote>
-              Greinar verða geymdar í gagnagrunni með ríku efni (myndir, töflur, myndbönd) –
-              hér er aðeins beinagrind með texta af núverandi vef.
-            </WipNote>
           </div>
         </Container>
       </Section>

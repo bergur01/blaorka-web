@@ -16,3 +16,20 @@ export function formatIs(n: number, maxFractionDigits = 0): string {
 export const makeFormatter = (maxFractionDigits: number) => ({
   format: (n: number) => formatIs(n, maxFractionDigits),
 });
+
+/** Mánaðanöfn eins og þau eru skrifuð með dagsetningu. */
+const MONTHS_IS = [
+  "janúar", "febrúar", "mars", "apríl", "maí", "júní",
+  "júlí", "ágúst", "september", "október", "nóvember", "desember",
+];
+
+/**
+ * Dagsetning á íslensku án Intl: "25. ágúst 2026".
+ * Intl.DateTimeFormat skilar enskum texta á Node-uppsetningum sem vantar
+ * íslensk staðsetningargögn – þá skildi vefþjónn og vafri á um innihaldið.
+ */
+export function formatDateIs(iso: string): string {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d}. ${MONTHS_IS[m - 1] ?? ""} ${y}`;
+}
