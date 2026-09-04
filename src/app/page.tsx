@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCalculators, getGallery, getLatestNews, getSolutions } from "@/lib/content";
+import {
+  getCalculators,
+  getGallery,
+  getLatestNews,
+  getSolutions,
+} from "@/lib/content";
 import { site, stats } from "@/content/site";
 import {
   Badge,
@@ -16,6 +21,7 @@ import { ArrowRight, Icon } from "@/components/icons";
 import { LogoMark } from "@/components/logo";
 import { NewsCard } from "@/components/news-card";
 import { Gallery } from "@/components/gallery";
+import { EnergyFlow } from "@/components/energy-flow";
 
 export default async function HomePage() {
   const [news, solutions, calculators, gallery] = await Promise.all([
@@ -49,34 +55,37 @@ export default async function HomePage() {
         </div>
 
         <Container className="pt-40 pb-24 sm:pt-48 sm:pb-32 lg:pt-56 lg:pb-40">
-          <div className="max-w-4xl">
-            <div className="mb-8 flex flex-wrap items-center gap-3">
-              <Badge tone="volt">Sólarorka · Rafgeymar · Ótengd kerfi</Badge>
-              <span className="text-sm text-white/55">{site.tagline}</span>
+          <div className="grid items-center gap-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:gap-8">
+            <div className="max-w-4xl">
+              <div className="mb-8 flex flex-wrap items-center gap-3">
+                <Badge tone="volt">Sólarorka · Rafgeymar · Ótengd kerfi</Badge>
+                <span className="text-sm text-white/55">{site.tagline}</span>
+              </div>
+              <Heading as="h1" size="xl">
+                Þín eigin <span className="text-gradient">orka</span> –
+                <br className="hidden sm:block" /> hvar sem er á landinu.
+              </Heading>
+              <Lead className="mt-8 max-w-2xl text-white/70">
+                Bláorka hannar og smíðar sólarorkukerfi með LiFePO4 rafgeymum
+                fyrir heimili, sumarhús, húsbíla, báta og fjarskiptastaði. Frá
+                einni sellu á þaki upp í þriggja fasa kerfi fyrir heila eyju.
+              </Lead>
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <Button href="/lausnir" size="lg">
+                  Skoða lausnir
+                </Button>
+                <Button href="/reiknivelar" size="lg" variant="outline">
+                  Reiknivélar
+                </Button>
+                <Link
+                  href="/hafa-samband"
+                  className="text-sm font-medium text-white/70 hover:text-white underline-offset-4 hover:underline"
+                >
+                  Eða fáðu tilboð →
+                </Link>
+              </div>
             </div>
-            <Heading as="h1" size="xl">
-              Þín eigin <span className="text-gradient">orka</span> –
-              <br className="hidden sm:block" /> hvar sem er á landinu.
-            </Heading>
-            <Lead className="mt-8 max-w-2xl text-white/70">
-              Bláorka hannar og smíðar sólarorkukerfi með LiFePO4 rafgeymum fyrir
-              heimili, sumarhús, húsbíla, báta og fjarskiptastaði. Frá einni sellu
-              á þaki upp í þriggja fasa kerfi fyrir heila eyju.
-            </Lead>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Button href="/lausnir" size="lg">
-                Skoða lausnir
-              </Button>
-              <Button href="/reiknivelar" size="lg" variant="outline">
-                Reiknivélar
-              </Button>
-              <Link
-                href="/hafa-samband"
-                className="text-sm font-medium text-white/70 hover:text-white underline-offset-4 hover:underline"
-              >
-                Eða fáðu tilboð →
-              </Link>
-            </div>
+            <EnergyFlow className="w-full max-w-lg justify-self-center xl:max-w-none" />
           </div>
 
           {/* Tölur */}
@@ -101,8 +110,9 @@ export default async function HomePage() {
               <Eyebrow className="mb-4">Lausnir</Eyebrow>
               <Heading>Kerfi sem passa þínum aðstæðum</Heading>
               <Lead className="mt-4 text-ink-900/65">
-                Hvort sem þú ert með sumarhús úti í sveit, húsbíl á hringveginum eða
-                fjarskiptastöð uppi á fjalli – við finnum réttu samsetninguna.
+                Hvort sem þú ert með sumarhús úti í sveit, húsbíl á hringveginum
+                eða fjarskiptastöð uppi á fjalli – við finnum réttu
+                samsetninguna.
               </Lead>
             </div>
             <TextLink href="/lausnir">Allar lausnir</TextLink>
@@ -124,7 +134,9 @@ export default async function HomePage() {
                   <h3 className="mt-6 font-display text-xl font-semibold tracking-tight">
                     {s.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-900/65">{s.tagline}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-900/65">
+                    {s.tagline}
+                  </p>
                 </div>
                 <span className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-500">
                   Nánar
@@ -149,29 +161,49 @@ export default async function HomePage() {
               <Heading>Sól, rafgeymar og heili sem stýrir öllu</Heading>
               <Lead className="mt-5 text-white/65">
                 Kerfin okkar eru byggð á Victron búnaði og eigin LiFePO4
-                raforkubönkum. Allt tengist saman á einni DC-skinnu og stýrieining
-                sér um að hlaða, afhlaða og ræsa rafstöð þegar þarf – sjálfkrafa.
+                raforkubönkum. Allt tengist saman á einni DC-skinnu og
+                stýrieining sér um að hlaða, afhlaða og ræsa rafstöð þegar þarf
+                – sjálfkrafa.
               </Lead>
               <ol className="mt-10 space-y-6">
                 {[
-                  ["Sólarsellur", "Framleiða jafnstraum – MPPT stýring hámarkar nýtinguna, líka í skýjuðu veðri."],
-                  ["Raforkubanki", "LiFePO4 rafgeymar geyma orkuna. 10 kWst per eining, stækkanlegt í 40+ kWst."],
-                  ["Áriðill", "MultiPlus-II breytir í 230 V riðstraum – einfasa eða þriggja fasa."],
-                  ["Stýrieining", "Cerbo GX fylgist með öllu, ræsir rafstöð ef þarf og sendir gögn í app."],
+                  [
+                    "Sólarsellur",
+                    "Framleiða jafnstraum – MPPT stýring hámarkar nýtinguna, líka í skýjuðu veðri.",
+                  ],
+                  [
+                    "Raforkubanki",
+                    "LiFePO4 rafgeymar geyma orkuna. 10 kWst per eining, stækkanlegt í 40+ kWst.",
+                  ],
+                  [
+                    "Áriðill",
+                    "MultiPlus-II breytir í 230 V riðstraum – einfasa eða þriggja fasa.",
+                  ],
+                  [
+                    "Stýrieining",
+                    "Cerbo GX fylgist með öllu, ræsir rafstöð ef þarf og sendir gögn í app.",
+                  ],
                 ].map(([title, text], i) => (
                   <li key={title} className="flex gap-5">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-volt-500/40 font-display text-sm font-semibold text-volt-300">
                       {i + 1}
                     </span>
                     <div>
-                      <h3 className="font-display text-lg font-semibold">{title}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-white/60">{text}</p>
+                      <h3 className="font-display text-lg font-semibold">
+                        {title}
+                      </h3>
+                      <p className="mt-1 text-sm leading-relaxed text-white/60">
+                        {text}
+                      </p>
                     </div>
                   </li>
                 ))}
               </ol>
               <div className="mt-10">
-                <Button href="/frodleikur/otengd-kerfi-grunnur" variant="outline">
+                <Button
+                  href="/frodleikur/otengd-kerfi-grunnur"
+                  variant="outline"
+                >
                   Lesa meira í fróðleik
                 </Button>
               </div>
@@ -183,7 +215,9 @@ export default async function HomePage() {
                 <SystemDiagram />
               </div>
               <div className="absolute -bottom-6 -left-6 hidden rounded-2xl border border-white/10 bg-ink-900/90 p-4 shadow-glow backdrop-blur sm:block">
-                <p className="text-[11px] uppercase tracking-wider text-white/50">Rafgeymir</p>
+                <p className="text-[11px] uppercase tracking-wider text-white/50">
+                  Rafgeymir
+                </p>
                 <p className="font-display text-2xl font-semibold text-volt-300">
                   94 % <span className="text-sm text-white/60">hlaðinn</span>
                 </p>
@@ -219,10 +253,16 @@ export default async function HomePage() {
                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white text-brand-500 ring-1 ring-mist-200 group-hover:bg-brand-500 group-hover:text-white">
                       <Icon name={c.icon} className="h-5 w-5" />
                     </span>
-                    {c.status === "soon" && <Badge tone="neutral">Væntanlegt</Badge>}
+                    {c.status === "soon" && (
+                      <Badge tone="neutral">Væntanlegt</Badge>
+                    )}
                   </div>
-                  <h3 className="mt-5 font-display text-lg font-semibold tracking-tight">{c.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-900/60">{c.description}</p>
+                  <h3 className="mt-5 font-display text-lg font-semibold tracking-tight">
+                    {c.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-900/60">
+                    {c.description}
+                  </p>
                 </Link>
               ))}
             </div>
@@ -272,12 +312,16 @@ export default async function HomePage() {
               <Eyebrow className="mb-4">Komdu við</Eyebrow>
               <Heading>Verslunin í Fosshálsi</Heading>
               <Lead className="mt-4 text-ink-900/65">
-                Victron-búnaður, Bláorku rafgeymar, sólarsellur, kaplar og tengi – allt á lager. Kíktu við, við
-                setjum saman kerfið með þér yfir kaffibolla.
+                Victron-búnaður, Bláorku rafgeymar, sólarsellur, kaplar og tengi
+                – allt á lager. Kíktu við, við setjum saman kerfið með þér yfir
+                kaffibolla.
               </Lead>
               <dl className="mt-6 space-y-1.5 text-sm">
                 {site.hours.map((h) => (
-                  <div key={h.days} className="flex justify-between gap-4 border-b border-mist-200 py-1.5">
+                  <div
+                    key={h.days}
+                    className="flex justify-between gap-4 border-b border-mist-200 py-1.5"
+                  >
                     <dt className="text-ink-900/60">{h.days}</dt>
                     <dd className="font-medium">{h.time}</dd>
                   </div>
@@ -294,13 +338,31 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="relative col-span-2 aspect-[16/9] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
-                <Image src="/photos/komdu-vi-hja-blaorku-15a2772.webp" alt="Verslun Bláorku að Fosshálsi 27" fill sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+                <Image
+                  src="/photos/komdu-vi-hja-blaorku-15a2772.webp"
+                  alt="Verslun Bláorku að Fosshálsi 27"
+                  fill
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="object-cover"
+                />
               </div>
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
-                <Image src="/photos/victron-raforkubunaur-15a3061.webp" alt="Victron búnaður" fill sizes="(min-width: 1024px) 27vw, 50vw" className="object-cover" />
+                <Image
+                  src="/photos/victron-raforkubunaur-15a3061.webp"
+                  alt="Victron búnaður"
+                  fill
+                  sizes="(min-width: 1024px) 27vw, 50vw"
+                  className="object-cover"
+                />
               </div>
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-ink-800 shadow-card">
-                <Image src="/photos/stasetning-komdu-vi-15a3301.webp" alt="Lagerinn" fill sizes="(min-width: 1024px) 27vw, 50vw" className="object-cover" />
+                <Image
+                  src="/photos/stasetning-komdu-vi-15a3301.webp"
+                  alt="Lagerinn"
+                  fill
+                  sizes="(min-width: 1024px) 27vw, 50vw"
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>
@@ -343,7 +405,13 @@ export default async function HomePage() {
 
 /** Einföld skýringarmynd af kerfi – SVG með dýnamískum línum. */
 function SystemDiagram() {
-  const node = (x: number, y: number, label: string, icon: React.ReactNode, accent = false) => (
+  const node = (
+    x: number,
+    y: number,
+    label: string,
+    icon: React.ReactNode,
+    accent = false,
+  ) => (
     <g transform={`translate(${x},${y})`}>
       <rect
         x="-44"
@@ -354,16 +422,34 @@ function SystemDiagram() {
         fill={accent ? "#1288ca" : "rgba(255,255,255,0.05)"}
         stroke={accent ? "#4bd8ec" : "rgba(255,255,255,0.15)"}
       />
-      <g transform="translate(-10,-20)" stroke="white" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <g
+        transform="translate(-10,-20)"
+        stroke="white"
+        fill="none"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         {icon}
       </g>
-      <text y="22" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="10" fontFamily="var(--font-inter)">
+      <text
+        y="22"
+        textAnchor="middle"
+        fill="rgba(255,255,255,0.8)"
+        fontSize="10"
+        fontFamily="var(--font-inter)"
+      >
         {label}
       </text>
     </g>
   );
   return (
-    <svg viewBox="0 0 400 300" className="w-full" role="img" aria-label="Skýringarmynd af sólarorkukerfi">
+    <svg
+      viewBox="0 0 400 300"
+      className="w-full"
+      role="img"
+      aria-label="Skýringarmynd af sólarorkukerfi"
+    >
       <defs>
         <linearGradient id="flow" x1="0" x2="1">
           <stop offset="0" stopColor="#1288ca" stopOpacity="0" />
@@ -378,7 +464,13 @@ function SystemDiagram() {
         <path d="M200 150 C 270 150, 270 70, 330 70" />
         <path d="M200 150 C 270 150, 270 230, 330 230" />
       </g>
-      <g stroke="url(#flow)" strokeWidth="2.5" fill="none" strokeDasharray="14 220" className="[animation:dash_3s_linear_infinite]">
+      <g
+        stroke="url(#flow)"
+        strokeWidth="2.5"
+        fill="none"
+        strokeDasharray="14 220"
+        className="[animation:dash_3s_linear_infinite]"
+      >
         <path d="M70 70 C 130 70, 130 150, 200 150" />
         <path d="M70 230 C 130 230, 130 150, 200 150" />
         <path d="M200 150 C 270 150, 270 70, 330 70" />
@@ -386,11 +478,52 @@ function SystemDiagram() {
       </g>
       <style>{`@keyframes dash{to{stroke-dashoffset:-234}}`}</style>
 
-      {node(60, 70, "Sólarsellur", <><rect x="2" y="3" width="16" height="10" rx="1.5" /><path d="M7 3v10M13 3v10M2 8h16M10 13v3" /></>)}
-      {node(60, 230, "Vindur / rafstöð", <><path d="M3 6h9a2.5 2.5 0 1 0-2.5-2.5" /><path d="M3 11h13a2.5 2.5 0 1 1-2.5 2.5" /><path d="M3 16h6" /></>)}
-      {node(200, 150, "Raforkubanki", <><rect x="1" y="5" width="15" height="9" rx="2" /><path d="M18 8.5v2M5 8.5v2M8.5 8.5v2M12 8.5v2" /></>, true)}
-      {node(340, 70, "Áriðill 230 V", <><path d="M1 10c2-4 3.5-4 5 0s3.5 4 5 0 3.5-4 5 0" /></>)}
-      {node(340, 230, "Stýrieining / app", <><rect x="2" y="3" width="16" height="12" rx="2" /><path d="M7 19h6M10 15v4" /></>)}
+      {node(
+        60,
+        70,
+        "Sólarsellur",
+        <>
+          <rect x="2" y="3" width="16" height="10" rx="1.5" />
+          <path d="M7 3v10M13 3v10M2 8h16M10 13v3" />
+        </>,
+      )}
+      {node(
+        60,
+        230,
+        "Vindur / rafstöð",
+        <>
+          <path d="M3 6h9a2.5 2.5 0 1 0-2.5-2.5" />
+          <path d="M3 11h13a2.5 2.5 0 1 1-2.5 2.5" />
+          <path d="M3 16h6" />
+        </>,
+      )}
+      {node(
+        200,
+        150,
+        "Raforkubanki",
+        <>
+          <rect x="1" y="5" width="15" height="9" rx="2" />
+          <path d="M18 8.5v2M5 8.5v2M8.5 8.5v2M12 8.5v2" />
+        </>,
+        true,
+      )}
+      {node(
+        340,
+        70,
+        "Áriðill 230 V",
+        <>
+          <path d="M1 10c2-4 3.5-4 5 0s3.5 4 5 0 3.5-4 5 0" />
+        </>,
+      )}
+      {node(
+        340,
+        230,
+        "Stýrieining / app",
+        <>
+          <rect x="2" y="3" width="16" height="12" rx="2" />
+          <path d="M7 19h6M10 15v4" />
+        </>,
+      )}
     </svg>
   );
 }
