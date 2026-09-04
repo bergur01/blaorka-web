@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getKnowledgeArticles } from "@/lib/content";
-import { Container, PageHero, Section, WipNote } from "@/components/ui";
+import { Container, Eyebrow, Heading, Lead, PageHero, Section, WipNote } from "@/components/ui";
 import { ArrowRight, Icon } from "@/components/icons";
 import { InverterWave } from "@/components/inverter-wave";
+import { SystemLab } from "@/components/system-lab/system-lab";
 
 export const metadata: Metadata = {
   title: "Fróðleikur",
@@ -23,6 +24,24 @@ export default async function KnowledgePage() {
         image="/gallery/43.webp"
         aside={<InverterWave className="w-full" />}
       />
+      <Section tone="dark" id="hermir">
+        <Container>
+          <div data-reveal className="max-w-3xl">
+            <Eyebrow tone="volt">Gagnvirk skýringarmynd</Eyebrow>
+            <Heading as="h2" size="lg" className="mt-4">
+              Sólarhringur í ótengdu kerfi
+            </Heading>
+            <Lead className="mt-4 text-white/70">
+              Sólin kemur upp, sellurnar fara í gang, vindmyllan tekur við þegar birtan dvínar og rafgeymirinn
+              brúar nóttina. Dragðu í takkana – breyttu mánuði, sólskini, vindi og notkun – og sjáðu hvað gerist.
+              Allar tölur byggja á raunverulegum veðurgögnum fyrir staðinn sem þú velur.
+            </Lead>
+          </div>
+          <div data-reveal className="mt-10">
+            <SystemLab />
+          </div>
+        </Container>
+      </Section>
       <Section tone="light">
         <Container>
           <div data-reveal-stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
