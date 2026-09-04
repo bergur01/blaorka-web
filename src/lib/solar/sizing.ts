@@ -73,7 +73,7 @@ export const PANEL_W = 455; // W per sella – sellan sem Bláorka selur
 export const PANEL_DIMS = { length: 1762, width: 1134, depth: 30 } as const;
 /** Flatarmál einnar sellu, m² */
 export const PANEL_AREA_M2 = (PANEL_DIMS.length * PANEL_DIMS.width) / 1e6;
-export const BANK_KWH = 10; // Bláorku 48 V 200 Ah ≈ 9,6 kWst
+export const BANK_KWH = 10; // Bláorku 51,2 V 200 Ah = 10,24 kWst, talað um sem 10 kWst
 export const DOD = 0.8; // nýtanleg afhleðsludýpt
 export const INVERTER_EFF = 0.94;
 

@@ -133,7 +133,7 @@ export const solutions: Solution[] = [
     title: "Raforkubankar",
     tagline: "Bláorku LiFePO4 rafgeymar – orkugeymsla sem endist.",
     description:
-      "Okkar eigin LiFePO4 rafgeymabankar, 48 V 200 Ah (10 kWst), eru hjartað í flestum kerfum sem við smíðum. Þeir þola þúsundir hleðsluhringja, eru öruggir og hægt er að raða þeim saman í 20, 30 eða 40+ kWst banka.",
+      "Okkar eigin LiFePO4 rafgeymabankar, 51,2 V 200 Ah (10 kWst), eru hjartað í flestum kerfum sem við smíðum. Þeir þola þúsundir hleðsluhringja, eru öruggir og hægt er að raða þeim saman í 20, 30 eða 40+ kWst banka.",
     icon: "battery",
     highlights: [
       "10 kWst per eining – stækkanlegt í raðir",
@@ -142,7 +142,7 @@ export const solutions: Solution[] = [
       "Samhæft við Victron GX kerfi",
     ],
     equipment: [
-      "Bláorku 48 V 200 Ah LiFePO4",
+      "Bláorku 51,2 V 200 Ah LiFePO4",
       "Bláorku 12,8 V og 25,6 V rafgeymar",
       "Lynx Distributor dreifiskinnur",
     ],

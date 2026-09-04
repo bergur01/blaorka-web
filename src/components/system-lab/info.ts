@@ -78,7 +78,7 @@ export const NODE_INFO: Record<NodeId, NodeInfo> = {
     title: "LiFePO4 rafgeymar",
     text: "Rafgeymirinn geymir sólina fram á kvöld og vindinn fram á logn. Litíumjárnfosfat þolir djúpa afhleðslu, þúsundir hleðslulota og skilar nánast öllu sem sett er inn.",
     facts: [
-      "Bláorku bankar: 48 V / 200 Ah ≈ 10 kWst hver",
+      "Bláorku bankar: 51,2 V / 200 Ah ≈ 10,2 kWst hver",
       "Nýtanleg dýpt 80–90 % – blýgeymir þolir 50 %",
       "BMS talar við Cerbo og ver geyminn í frosti og hita",
     ],

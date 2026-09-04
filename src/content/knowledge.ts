@@ -112,7 +112,7 @@ export const knowledgeArticles: KnowledgeArticle[] = [
       {
         heading: "Ah, V og kWst",
         paragraphs: [
-          "Orka rafgeymis í kílóvattstundum (kWst) er spenna × rýmd: 48 V × 200 Ah = 9,6 kWst, oftast kallað 10 kWst. Fjórir slíkir bankar gefa 40 kWst – nóg til að keyra heilt heimili í 1–2 daga án sólar.",
+          "Orka rafgeymis í kílóvattstundum (kWst) er spenna × rýmd: 51,2 V × 200 Ah = 10,2 kWst, oftast kallað 10 kWst. Fjórir slíkir bankar gefa 40 kWst – nóg til að keyra heilt heimili í 1–2 daga án sólar.",
         ],
       },
       {

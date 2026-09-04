@@ -1221,7 +1221,7 @@ function EquipmentList({
   const rows = [
     [`${result.panels} ×`, `${PANEL_W} W sólarsellur (1762 × 1134 mm)`, `${fmt1.format(result.kWp)} kWp · ${fmt.format(result.panels * PANEL_AREA_M2)} m²`],
     [`${result.mppt.count} ×`, result.mppt.model, "sólarsellustýring"],
-    [`${result.battery.banks} ×`, `Bláorku 48 V 200 Ah LiFePO4`, `${fmt.format(result.battery.kWh)} kWst`],
+    [`${result.battery.banks} ×`, `Bláorku 51,2 V 200 Ah LiFePO4`, `${fmt.format(result.battery.kWh)} kWst`],
     [`${result.inverter.count} ×`, result.inverter.model, `${fmt.format(result.inverter.totalKva)} kVA`],
     ["1 ×", "Cerbo GX + Touch skjár", "stýring"],
     ["1 ×", "Lynx Distributor", "DC-skinna"],
