@@ -1,35 +1,7 @@
 import Link from "next/link";
-import { navigation, site } from "@/content/site";
+import { footerColumns as columns, site } from "@/content/site";
 import { Logo, LogoMark } from "./logo";
 import { ExternalArrow } from "./icons";
-
-const columns = [
-  {
-    title: "Vefurinn",
-    links: navigation.map((n) => ({ href: n.href, label: n.label })),
-  },
-  {
-    title: "Lausnir",
-    links: [
-      { href: "/lausnir/heimili-og-sumarhus", label: "Heimili & sumarhús" },
-      { href: "/lausnir/otengd-kerfi", label: "Ótengd kerfi" },
-      { href: "/lausnir/husbilar-og-batar", label: "Húsbílar & bátar" },
-      { href: "/lausnir/fyrirtaeki-og-fjarskipti", label: "Fyrirtæki & fjarskipti" },
-      { href: "/lausnir/raforkubankar", label: "Raforkubankar" },
-      { href: "/verkefni", label: "Verkefni í myndum" },
-    ],
-  },
-  {
-    title: "Reiknivélar",
-    links: [
-      { href: "/reiknivelar/solarorkukerfi", label: "Stærð sólarorkukerfis" },
-      { href: "/reiknivelar/mppt", label: "MPPT reiknivél" },
-      { href: "/reiknivelar/orkunotkun", label: "Orkunotkun" },
-      { href: "/reiknivelar/rafgeymar", label: "Rafgeymabanki" },
-      { href: "/reiknivelar/kaplar", label: "Kapalstærð" },
-    ],
-  },
-];
 
 export function SiteFooter() {
   return (
